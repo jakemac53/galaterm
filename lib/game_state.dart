@@ -3,6 +3,7 @@ import 'entity.dart';
 class GameState {
   final int width;
   final int height;
+  int score = 0;
 
   final List<Entity> _entities = [];
   final List<Entity> _pendingAdds = [];

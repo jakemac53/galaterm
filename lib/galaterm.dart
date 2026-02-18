@@ -111,8 +111,30 @@ class _GalatermAppState extends State<GalatermApp> {
                     );
                   }),
                   const SizedBox(height: 1),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: 30,
+                        child: ProgressBar(
+                          value: (_player.health / 100.0).clamp(0.0, 1.0),
+                          valueColor: _player.health > 20
+                              ? const Color(0xFF00FF00)
+                              : const Color(0xFFFF0000),
+                          backgroundColor: const Color(0xFF333333),
+                          showPercentage: false,
+                          label: 'Health: ${_player.health}',
+                        ),
+                      ),
+                      Text(
+                        'Score: ${_gameState.score}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 1),
                   const Text(
-                    'Use mouse to move. Press "q" to quit.',
+                    'Use mouse to move. Press SPACE to fire. Press "q" to quit.',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],

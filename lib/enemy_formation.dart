@@ -1,12 +1,19 @@
+import 'dart:math';
+
 import 'entity.dart';
 import 'enemy.dart';
 import 'game_state.dart';
+import 'projectile.dart';
 
 class EnemyFormation extends Entity {
   final List<Enemy> enemies = [];
   int _dx = 1;
   int _tickCount = 0;
   final int moveInterval;
+  final Random _rand = Random();
+
+  @override
+  bool get isEnemy => true;
 
   EnemyFormation({required int rows, required int cols, this.moveInterval = 5})
       : super(x: 0, y: 0, character: ' ') {
@@ -27,6 +34,18 @@ class EnemyFormation extends Entity {
     if (enemies.isEmpty) {
       state.removeEntity(this);
       return;
+    }
+    
+    // 5% chance per active tick to randomly fire a projectile
+    if (_rand.nextDouble() < 0.05) {
+      final firingEnemy = enemies[_rand.nextInt(enemies.length)];
+      state.addEntity(
+        Projectile(
+          x: firingEnemy.x,
+          y: firingEnemy.y + 1,
+          isEnemyProjectile: true,
+        ),
+      );
     }
 
     _tickCount++;

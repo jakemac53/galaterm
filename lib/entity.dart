@@ -16,6 +16,9 @@ abstract class Entity {
     this.color,
   });
 
+  bool get isPlayer => false;
+  bool get isEnemy => false;
+
   void tick(GameState state) {}
 
   void attack(int damage) {
