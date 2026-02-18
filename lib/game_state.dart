@@ -22,27 +22,24 @@ class GameState {
   }
 
   void tick() {
+    // Move all enemies
     for (final entity in _entities) {
-      if (!_pendingRemoves.contains(entity)) {
-        entity.move(this);
-      }
+      entity.move(this);
     }
 
+    // Build a grid of all active entities and their positions
     final grid = <int, Map<int, List<Entity>>>{};
     for (final group in _entities) {
-      if (!_pendingRemoves.contains(group)) {
-        for (final e in group.activeEntities) {
-          if (e.health > 0) {
-            grid.putIfAbsent(e.x, () => {}).putIfAbsent(e.y, () => []).add(e);
-          }
+      for (final e in group.activeEntities) {
+        if (e.health > 0) {
+          grid.putIfAbsent(e.x, () => {}).putIfAbsent(e.y, () => []).add(e);
         }
       }
     }
 
+    // Handle collisions, entities are in control of this.
     for (final entity in _entities) {
-      if (!_pendingRemoves.contains(entity)) {
-        entity.collide(this, grid);
-      }
+      entity.collide(this, grid);
     }
 
     _entities.addAll(_pendingAdds);

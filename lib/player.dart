@@ -22,6 +22,6 @@ class Player extends Entity {
   }
 
   void fire(GameState state) {
-    state.addEntity(Projectile(x: x, y: y - 1));
+    state.addEntity(Projectile(x: x, y: y - 1, dy: -1));
   }
 }

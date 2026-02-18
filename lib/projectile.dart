@@ -5,10 +5,14 @@ import 'game_state.dart';
 
 class Projectile extends Entity {
   final bool isEnemyProjectile;
+  final int dx;
+  final int dy;
 
   Projectile({
     required super.x,
     required super.y,
+    this.dx = 0,
+    required this.dy,
     this.isEnemyProjectile = false,
   }) : super(
          health: 1,
@@ -23,11 +27,8 @@ class Projectile extends Entity {
 
   @override
   void move(GameState state) {
-    if (isEnemyProjectile) {
-      y += 1;
-    } else {
-      y -= 1;
-    }
+    x += dx;
+    y += dy;
 
     if (y < 0 || y >= state.height) {
       state.removeEntity(this);

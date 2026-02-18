@@ -43,6 +43,7 @@ class EnemyFormation extends Entity {
         Projectile(
           x: firingEnemy.x,
           y: firingEnemy.y + 1,
+          dy: 1,
           isEnemyProjectile: true,
         ),
       );
