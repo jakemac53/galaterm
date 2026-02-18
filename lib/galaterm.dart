@@ -26,7 +26,7 @@ class _GalatermAppState extends State<GalatermApp> {
     _gameState = GameState(width: _width, height: _height);
     _player = Player(x: _width ~/ 2, y: _height - 2);
     _gameState.addEntity(_player);
-    _gameState.addEntity(EnemyFormation(rows: 4, cols: 10));
+    _gameState.addEntity(EnemyFormation(rows: 3, cols: 8));
     // Initialize the entities immediately so they render on frame 1
     _gameState.tick();
 

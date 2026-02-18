@@ -19,7 +19,16 @@ class EnemyFormation extends Entity {
       : super(x: 0, y: 0, character: ' ') {
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
-        enemies.add(Enemy(x: 10 + c * 4, y: 2 + r * 2));
+        final ex = 10 + c * 8;
+        final ey = 2 + r * 3;
+
+        if (r == 0) {
+          enemies.add(CruiserEnemy(x: ex, y: ey));
+        } else if (r == 1) {
+          enemies.add(SaucerEnemy(x: ex, y: ey));
+        } else {
+          enemies.add(DroneEnemy(x: ex, y: ey));
+        }
       }
     }
   }
