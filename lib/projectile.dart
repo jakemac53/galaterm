@@ -30,7 +30,7 @@ class Projectile extends Entity {
     x += dx;
     y += dy;
 
-    if (y < 0 || y >= state.height) {
+    if (x < 0 || x >= state.width || y < 0 || y >= state.height) {
       state.removeEntity(this);
     }
   }
