@@ -12,8 +12,8 @@ class Player extends Entity {
   bool get isPlayer => true;
 
   @override
-  void tick(GameState state) {
-    // Future player-specific tick logic
+  void move(GameState state) {
+    // Future player-specific movement logic
   }
   
   void moveTo(int newX, int newY) {

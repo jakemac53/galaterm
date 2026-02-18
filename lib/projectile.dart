@@ -22,7 +22,7 @@ class Projectile extends Entity {
   bool get isEnemy => isEnemyProjectile;
 
   @override
-  void tick(GameState state) {
+  void move(GameState state) {
     if (isEnemyProjectile) {
       y += 1;
     } else {
@@ -31,12 +31,15 @@ class Projectile extends Entity {
 
     if (y < 0 || y >= state.height) {
       state.removeEntity(this);
-      return;
     }
+  }
 
-    for (final group in state.entities) {
-      for (final e in group.activeEntities) {
-        if (e != this && e.health > 0 && e.x == x && e.y == y) {
+  @override
+  void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
+    final targets = grid[x]?[y];
+    if (targets != null) {
+      for (final e in targets) {
+        if (e != this && e.health > 0) {
           if (isEnemyProjectile && e.isPlayer) {
             e.attack(10);
             state.removeEntity(this);

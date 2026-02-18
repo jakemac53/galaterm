@@ -19,7 +19,9 @@ abstract class Entity {
   bool get isPlayer => false;
   bool get isEnemy => false;
 
-  void tick(GameState state) {}
+  void move(GameState state) {}
+
+  void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {}
 
   void attack(int damage) {
     health -= damage;

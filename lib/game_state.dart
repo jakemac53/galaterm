@@ -24,7 +24,24 @@ class GameState {
   void tick() {
     for (final entity in _entities) {
       if (!_pendingRemoves.contains(entity)) {
-        entity.tick(this);
+        entity.move(this);
+      }
+    }
+
+    final grid = <int, Map<int, List<Entity>>>{};
+    for (final group in _entities) {
+      if (!_pendingRemoves.contains(group)) {
+        for (final e in group.activeEntities) {
+          if (e.health > 0) {
+            grid.putIfAbsent(e.x, () => {}).putIfAbsent(e.y, () => []).add(e);
+          }
+        }
+      }
+    }
+
+    for (final entity in _entities) {
+      if (!_pendingRemoves.contains(entity)) {
+        entity.collide(this, grid);
       }
     }
 

@@ -28,7 +28,7 @@ class EnemyFormation extends Entity {
   Iterable<Entity> get activeEntities => enemies;
 
   @override
-  void tick(GameState state) {
+  void move(GameState state) {
     enemies.removeWhere((e) => e.health <= 0);
 
     if (enemies.isEmpty) {
