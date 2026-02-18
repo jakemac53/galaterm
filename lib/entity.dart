@@ -21,4 +21,6 @@ abstract class Entity {
   void attack(int damage) {
     health -= damage;
   }
+
+  Iterable<Entity> get activeEntities => [this];
 }

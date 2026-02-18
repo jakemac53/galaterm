@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:nocterm/nocterm.dart';
 
 import 'entity.dart';
+import 'enemy_formation.dart';
 import 'game_state.dart';
 import 'player.dart';
 
@@ -23,9 +24,10 @@ class _GalatermAppState extends State<GalatermApp> {
   @override
   void initState() {
     super.initState();
-    _gameState = GameState();
-    _player = Player(x: 40, y: 20);
+    _gameState = GameState(width: _width, height: _height);
+    _player = Player(x: _width ~/ 2, y: _height - 2);
     _gameState.addEntity(_player);
+    _gameState.addEntity(EnemyFormation(rows: 4, cols: 10));
     // Initialize the entities immediately so they render on frame 1
     _gameState.tick();
 
@@ -48,7 +50,11 @@ class _GalatermAppState extends State<GalatermApp> {
     // In a sparse grid, this is much faster than iterating over entities on every cell rendering.
     final entityMap = <String, Entity>{};
     for (final e in _gameState.entities) {
-      entityMap['${e.x},${e.y}'] = e;
+      for (final active in e.activeEntities) {
+        if (active.health > 0) {
+          entityMap['${active.x},${active.y}'] = active;
+        }
+      }
     }
 
     return NoctermApp(

@@ -1,9 +1,14 @@
 import 'entity.dart';
 
 class GameState {
+  final int width;
+  final int height;
+
   final List<Entity> _entities = [];
   final List<Entity> _pendingAdds = [];
   final List<Entity> _pendingRemoves = [];
+
+  GameState({this.width = 80, this.height = 40});
 
   List<Entity> get entities => List.unmodifiable(_entities);
 
