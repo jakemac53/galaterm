@@ -5,16 +5,22 @@ abstract class Entity {
   int x;
   int y;
   int health;
-  String character;
+  List<String> lines;
   Color? color;
 
   Entity({
     required this.x,
     required this.y,
     this.health = 10,
-    required this.character,
+    String? character,
+    List<String>? lines,
     this.color,
-  });
+  }) : lines = lines ?? [character ?? ' '];
+
+  int get width => lines.isEmpty
+      ? 0
+      : lines.fold(0, (max, line) => line.length > max ? line.length : max);
+  int get height => lines.length;
 
   bool get isPlayer => false;
   bool get isEnemy => false;

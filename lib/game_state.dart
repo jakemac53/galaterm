@@ -32,7 +32,16 @@ class GameState {
     for (final group in _entities) {
       for (final e in group.activeEntities) {
         if (e.health > 0) {
-          grid.putIfAbsent(e.x, () => {}).putIfAbsent(e.y, () => []).add(e);
+          for (int dy = 0; dy < e.height; dy++) {
+            for (int dx = 0; dx < e.width; dx++) {
+              if (e.lines[dy].length > dx && e.lines[dy][dx] != ' ') {
+                final list = grid
+                    .putIfAbsent(e.x + dx, () => {})
+                    .putIfAbsent(e.y + dy, () => []);
+                if (!list.contains(e)) list.add(e);
+              }
+            }
+          }
         }
       }
     }

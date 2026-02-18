@@ -48,11 +48,23 @@ class _GalatermAppState extends State<GalatermApp> {
   Component build(BuildContext context) {
     // We create a lookup map to quickly find entities by their (x, y) coordinates.
     // In a sparse grid, this is much faster than iterating over entities on every cell rendering.
-    final entityMap = <String, Entity>{};
+    final charMap = <String, String>{};
+    final colorMap = <String, Color?>{};
     for (final e in _gameState.entities) {
       for (final active in e.activeEntities) {
         if (active.health > 0) {
-          entityMap['${active.x},${active.y}'] = active;
+          for (int dy = 0; dy < active.height; dy++) {
+            for (int dx = 0; dx < active.width; dx++) {
+              if (active.lines[dy].length > dx) {
+                final char = active.lines[dy][dx];
+                if (char != ' ') {
+                  final key = '${active.x + dx},${active.y + dy}';
+                  charMap[key] = char;
+                  colorMap[key] = active.color;
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -86,25 +98,26 @@ class _GalatermAppState extends State<GalatermApp> {
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: List.generate(_width, (x) {
-                        final entity = entityMap['$x,$y'];
                         return MouseRegion(
                           onHover: (event) {
-                            if (_player.x != x || _player.y != y) {
-                              _player.moveTo(x, y);
-                              // We don't need a hard setState here instantly since the game loop
-                              // re-renders every 100ms anyway, but for ultra responsiveness:
+                            final targetX = x - (_player.width ~/ 2);
+                            final targetY = y - (_player.height ~/ 2);
+                            if (_player.x != targetX || _player.y != targetY) {
+                              _player.moveTo(targetX, targetY);
                               setState(() {});
                             }
                           },
                           onEnter: (event) {
-                            if (_player.x != x || _player.y != y) {
-                              _player.moveTo(x, y);
+                            final targetX = x - (_player.width ~/ 2);
+                            final targetY = y - (_player.height ~/ 2);
+                            if (_player.x != targetX || _player.y != targetY) {
+                              _player.moveTo(targetX, targetY);
                               setState(() {});
                             }
                           },
                           child: Text(
-                            entity?.character ?? ' ',
-                            style: TextStyle(color: entity?.color),
+                            charMap['$x,$y'] ?? ' ',
+                            style: TextStyle(color: colorMap['$x,$y']),
                           ),
                         );
                       }),

@@ -37,19 +37,25 @@ class Projectile extends Entity {
 
   @override
   void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
-    final targets = grid[x]?[y];
-    if (targets != null) {
-      for (final e in targets) {
-        if (e != this && e.health > 0) {
-          if (isEnemyProjectile && e.isPlayer) {
-            e.attack(10);
-            state.removeEntity(this);
-            return;
-          } else if (!isEnemyProjectile && e.isEnemy) {
-            e.attack(1);
-            state.score += 10;
-            state.removeEntity(this);
-            return;
+    for (int pdy = 0; pdy < height; pdy++) {
+      for (int pdx = 0; pdx < width; pdx++) {
+        if (lines[pdy].length > pdx && lines[pdy][pdx] != ' ') {
+          final targets = grid[x + pdx]?[y + pdy];
+          if (targets != null) {
+            for (final e in targets.toList()) {
+              if (e != this && e.health > 0) {
+                if (isEnemyProjectile && e.isPlayer) {
+                  e.attack(10);
+                  state.removeEntity(this);
+                  return;
+                } else if (!isEnemyProjectile && e.isEnemy) {
+                  e.attack(1);
+                  state.score += 10;
+                  state.removeEntity(this);
+                  return;
+                }
+              }
+            }
           }
         }
       }

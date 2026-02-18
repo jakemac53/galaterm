@@ -6,7 +6,11 @@ import 'projectile.dart';
 
 class Player extends Entity {
   Player({required super.x, required super.y})
-    : super(health: 100, character: '▲', color: const Color(0xFF00FF00));
+    : super(
+        health: 100,
+        lines: [' ^ ', '<*>', '/ \\'],
+        color: const Color(0xFF00FF00),
+      );
 
   @override
   bool get isPlayer => true;
@@ -22,6 +26,6 @@ class Player extends Entity {
   }
 
   void fire(GameState state) {
-    state.addEntity(Projectile(x: x, y: y - 1, dy: -1));
+    state.addEntity(Projectile(x: x + 1, y: y - 1, dy: -1));
   }
 }
