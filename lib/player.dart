@@ -8,7 +8,7 @@ class Player extends Entity {
   Player({required super.x, required super.y})
     : super(
         health: 100,
-        lines: [' ^ ', '<*>', '/ \\'],
+        lines: ['<*>', '/ \\'],
         color: const Color(0xFF00FF00),
       );
 

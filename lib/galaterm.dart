@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:nocterm/nocterm.dart';
 
-import 'entity.dart';
 import 'enemy_formation.dart';
 import 'game_state.dart';
 import 'player.dart';
