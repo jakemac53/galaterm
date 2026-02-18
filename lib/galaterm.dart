@@ -1,4 +1,8 @@
+import 'dart:async';
 import 'package:nocterm/nocterm.dart';
+
+import 'game_state.dart';
+import 'player.dart';
 
 class GalatermApp extends StatefulComponent {
   const GalatermApp({super.key});
@@ -8,14 +12,44 @@ class GalatermApp extends StatefulComponent {
 }
 
 class _GalatermAppState extends State<GalatermApp> {
-  int _playerX = 40;
-  int _playerY = 20;
+  late GameState _gameState;
+  late Player _player;
+  Timer? _gameLoop;
 
   final int _width = 80;
   final int _height = 40;
 
   @override
+  void initState() {
+    super.initState();
+    _gameState = GameState();
+    _player = Player(x: 40, y: 20);
+    _gameState.addEntity(_player);
+    // Initialize the entities immediately so they render on frame 1
+    _gameState.tick();
+
+    _gameLoop = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      setState(() {
+        _gameState.tick();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _gameLoop?.cancel();
+    super.dispose();
+  }
+
+  @override
   Component build(BuildContext context) {
+    // We create a lookup map to quickly find entities by their (x, y) coordinates.
+    // In a sparse grid, this is much faster than iterating over entities on every cell rendering.
+    final entityMap = <String, String>{};
+    for (final e in _gameState.entities) {
+      entityMap['${e.x},${e.y}'] = e.character;
+    }
+
     return NoctermApp(
       title: 'Galaterm',
       child: Focusable(
@@ -41,26 +75,23 @@ class _GalatermAppState extends State<GalatermApp> {
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: List.generate(_width, (x) {
-                        final isPlayer = (x == _playerX && y == _playerY);
+                        final char = entityMap['$x,$y'] ?? ' ';
                         return MouseRegion(
                           onHover: (event) {
-                            if (_playerX != x || _playerY != y) {
-                              setState(() {
-                                _playerX = x;
-                                _playerY = y;
-                              });
+                            if (_player.x != x || _player.y != y) {
+                              _player.moveTo(x, y);
+                              // We don't need a hard setState here instantly since the game loop
+                              // re-renders every 100ms anyway, but for ultra responsiveness:
+                              setState(() {});
                             }
                           },
-                          // We also use onEnter just to be sure we catch the initial grid entry
                           onEnter: (event) {
-                            if (_playerX != x || _playerY != y) {
-                              setState(() {
-                                _playerX = x;
-                                _playerY = y;
-                              });
+                            if (_player.x != x || _player.y != y) {
+                              _player.moveTo(x, y);
+                              setState(() {});
                             }
                           },
-                          child: Text(isPlayer ? '▲' : ' '),
+                          child: Text(char),
                         );
                       }),
                     );
