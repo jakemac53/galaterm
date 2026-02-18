@@ -1,5 +1,6 @@
 import 'entity.dart';
 import 'game_state.dart';
+import 'projectile.dart';
 
 class Player extends Entity {
   Player({required super.x, required super.y})
@@ -13,5 +14,9 @@ class Player extends Entity {
   void moveTo(int newX, int newY) {
     x = newX;
     y = newY;
+  }
+
+  void fire(GameState state) {
+    state.addEntity(Projectile(x: x, y: y - 1));
   }
 }

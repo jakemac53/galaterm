@@ -1,3 +1,4 @@
+import 'package:nocterm/nocterm.dart';
 import 'game_state.dart';
 
 abstract class Entity {
@@ -5,12 +6,14 @@ abstract class Entity {
   int y;
   int health;
   String character;
+  Color? color;
 
   Entity({
     required this.x,
     required this.y,
     this.health = 10,
     required this.character,
+    this.color,
   });
 
   void tick(GameState state) {}

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:nocterm/nocterm.dart';
 
+import 'entity.dart';
 import 'game_state.dart';
 import 'player.dart';
 
@@ -45,9 +46,9 @@ class _GalatermAppState extends State<GalatermApp> {
   Component build(BuildContext context) {
     // We create a lookup map to quickly find entities by their (x, y) coordinates.
     // In a sparse grid, this is much faster than iterating over entities on every cell rendering.
-    final entityMap = <String, String>{};
+    final entityMap = <String, Entity>{};
     for (final e in _gameState.entities) {
-      entityMap['${e.x},${e.y}'] = e.character;
+      entityMap['${e.x},${e.y}'] = e;
     }
 
     return NoctermApp(
@@ -57,6 +58,10 @@ class _GalatermAppState extends State<GalatermApp> {
         onKeyEvent: (event) {
           if (event.character?.toLowerCase() == 'q') {
             shutdownApp();
+            return true;
+          }
+          if (event.logicalKey == LogicalKey.space || event.character == ' ') {
+            _player.fire(_gameState);
             return true;
           }
           return false;
@@ -75,7 +80,7 @@ class _GalatermAppState extends State<GalatermApp> {
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: List.generate(_width, (x) {
-                        final char = entityMap['$x,$y'] ?? ' ';
+                        final entity = entityMap['$x,$y'];
                         return MouseRegion(
                           onHover: (event) {
                             if (_player.x != x || _player.y != y) {
@@ -91,7 +96,10 @@ class _GalatermAppState extends State<GalatermApp> {
                               setState(() {});
                             }
                           },
-                          child: Text(char),
+                          child: Text(
+                            entity?.character ?? ' ',
+                            style: TextStyle(color: entity?.color),
+                          ),
                         );
                       }),
                     );
