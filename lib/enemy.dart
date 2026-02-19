@@ -13,6 +13,8 @@ class Enemy extends Entity {
     super.health = 1,
     super.lines,
     super.color,
+    this.divingSpeed = 8.0,
+    this.returnSpeed = 10.0,
   }) {
     formationX = x;
     formationY = y;
@@ -28,6 +30,9 @@ class Enemy extends Entity {
   // The position in the formation this enemy should occupy
   double formationX = 0;
   double formationY = 0;
+
+  final double divingSpeed;
+  final double returnSpeed;
 
   @override
   bool get isEnemy => true;
@@ -55,15 +60,15 @@ class Enemy extends Entity {
           tx = player.x;
         }
 
-        // Fixed downward speed
-        _vy = perFrame(12.0);
+        // Vertical speed is 80% of total diving speed
+        _vy = perFrame(divingSpeed * 0.8);
 
-        // Trend X towards player with some noise
+        // Trend X towards player with some noise (X speed is 60% of total diving speed)
         final dx = tx - x;
-        final xSpeed = perFrame(8.0);
+        final xSpeed = perFrame(divingSpeed * 0.6);
         _vx =
             (dx > 0 ? xSpeed : -xSpeed) +
-            (_rand.nextDouble() - 0.5) * perFrame(4.0);
+            (_rand.nextDouble() - 0.5) * perFrame(divingSpeed * 0.2);
 
         // Switch every 1.5 - 3 seconds
         _nextDirTicks = toTicks(1.5 + _rand.nextDouble() * 1.5);
@@ -90,7 +95,7 @@ class Enemy extends Entity {
         y = formationY;
         isReturning = false;
       } else {
-        final speed = perFrame(10.0);
+        final speed = perFrame(returnSpeed);
         x += (dx / dist) * speed;
         y += (dy / dist) * speed;
       }
@@ -122,16 +127,28 @@ class Enemy extends Entity {
 }
 
 class CruiserEnemy extends Enemy {
-  CruiserEnemy({required super.x, required super.y})
-    : super(health: 3, lines: ['<AA>'], color: const Color(0xFFFF00FF));
+  CruiserEnemy({
+    required super.x,
+    required super.y,
+    super.divingSpeed,
+    super.returnSpeed,
+  }) : super(health: 3, lines: ['<AA>'], color: const Color(0xFFFF00FF));
 }
 
 class SaucerEnemy extends Enemy {
-  SaucerEnemy({required super.x, required super.y})
-    : super(health: 2, lines: ['(-)'], color: const Color(0xFF00FFFF));
+  SaucerEnemy({
+    required super.x,
+    required super.y,
+    super.divingSpeed,
+    super.returnSpeed,
+  }) : super(health: 2, lines: ['(-)'], color: const Color(0xFF00FFFF));
 }
 
 class DroneEnemy extends Enemy {
-  DroneEnemy({required super.x, required super.y})
-    : super(health: 1, lines: ['[=]'], color: const Color(0xFFFF0000));
+  DroneEnemy({
+    required super.x,
+    required super.y,
+    super.divingSpeed,
+    super.returnSpeed,
+  }) : super(health: 1, lines: ['[=]'], color: const Color(0xFFFF0000));
 }

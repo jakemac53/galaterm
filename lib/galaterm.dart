@@ -35,6 +35,8 @@ class _GalatermAppState extends State<GalatermApp> {
         cols: 8,
         speed: perFrame(2.0 + (level - 1) * 0.5),
         fireRatePerSecond: 0.3 + (level - 1) * 0.2,
+        divingSpeed: 6.0 + (level - 1) * 2.0,
+        returnSpeed: 8.0 + (level - 1) * 1.5,
       );
       level++;
     }

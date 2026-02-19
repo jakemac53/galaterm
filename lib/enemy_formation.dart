@@ -11,6 +11,8 @@ class EnemyFormation extends Entity {
   double _dx;
   final double speed;
   final double fireRatePerSecond;
+  final double divingSpeed;
+  final double returnSpeed;
   final Random _rand = Random();
 
   @override
@@ -21,6 +23,8 @@ class EnemyFormation extends Entity {
     required int cols,
     double? speed,
     this.fireRatePerSecond = 0.5,
+    this.divingSpeed = 8.0,
+    this.returnSpeed = 10.0,
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
@@ -30,11 +34,32 @@ class EnemyFormation extends Entity {
         final double ey = (2 + r * 2).toDouble();
 
         if (r == 0) {
-          enemies.add(CruiserEnemy(x: ex, y: ey));
+          enemies.add(
+            CruiserEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
         } else if (r == 1) {
-          enemies.add(SaucerEnemy(x: ex, y: ey));
+          enemies.add(
+            SaucerEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
         } else {
-          enemies.add(DroneEnemy(x: ex, y: ey));
+          enemies.add(
+            DroneEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
         }
       }
     }
