@@ -8,9 +8,8 @@ import 'projectile.dart';
 class Player extends Entity {
   double? _targetX;
   double? _targetY;
-  double speed = 1.0 / 5;
+  double speed = .2;
   int _fireCooldown = 0;
-  // 30 ticks = 0.5s at 60fps
   static const int _fireInterval = 30;
 
   Player({required super.x, required super.y})
