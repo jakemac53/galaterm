@@ -15,7 +15,10 @@ class GalatermApp extends StatefulComponent {
 class _GalatermAppState extends State<GalatermApp> {
   late GameState _gameState;
   late Player _player;
-  Timer? _gameLoop;
+  bool _running = true;
+  final List<double> _frameTimes = [];
+  double _fps = 0;
+  double _avgFrameTime = 0;
 
   final int _width = 80;
   final int _height = 40;
@@ -30,16 +33,48 @@ class _GalatermAppState extends State<GalatermApp> {
     // Initialize the entities immediately so they render on frame 1
     _gameState.tick();
 
-    _gameLoop = Timer.periodic(const Duration(milliseconds: 16), (_) {
+    _runGameLoop();
+  }
+
+  Future<void> _runGameLoop() async {
+    final sw = Stopwatch();
+    while (_running) {
+      sw.reset();
+      sw.start();
+
+      if (!mounted) break;
+
       setState(() {
         _gameState.tick();
       });
-    });
+
+      final elapsedMs = sw.elapsedMicroseconds / 1000.0;
+      _frameTimes.add(elapsedMs);
+      if (_frameTimes.length > 60) {
+        _frameTimes.removeAt(0);
+      }
+
+      if (_frameTimes.isNotEmpty) {
+        _avgFrameTime =
+            _frameTimes.reduce((a, b) => a + b) / _frameTimes.length;
+        // Use 16ms as the baseline for FPS if we are within budget
+        final frameDuration = _avgFrameTime > 16.0 ? _avgFrameTime : 16.0;
+        _fps = 1000.0 / frameDuration;
+      }
+
+      final remaining = 16 - sw.elapsedMilliseconds;
+      if (remaining > 0) {
+        await Future.delayed(Duration(milliseconds: remaining));
+      } else {
+        // Yield to allow other events to process even if we are over budget
+        await Future.delayed(Duration.zero);
+      }
+    }
   }
 
   @override
   void dispose() {
-    _gameLoop?.cancel();
+    _running = false;
     super.dispose();
   }
 
@@ -143,7 +178,7 @@ class _GalatermAppState extends State<GalatermApp> {
                         ),
                       ),
                       Text(
-                        'Score: ${_gameState.score}',
+                        'Score: ${_gameState.score} | FPS: ${_fps.toStringAsFixed(1)} | Frame: ${_avgFrameTime.toStringAsFixed(2)}ms',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
