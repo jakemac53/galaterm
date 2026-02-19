@@ -13,6 +13,15 @@ class GameState {
 
   List<Entity> get entities => List.unmodifiable(_entities);
 
+  bool get isGameOver {
+    for (final entity in _entities) {
+      for (final active in entity.activeEntities) {
+        if (active.isPlayer && active.health > 0) return false;
+      }
+    }
+    return true;
+  }
+
   void addEntity(Entity entity) {
     _pendingAdds.add(entity);
   }

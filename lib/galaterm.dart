@@ -36,6 +36,20 @@ class _GalatermAppState extends State<GalatermApp> {
     _runGameLoop();
   }
 
+  void _resetGame() {
+    setState(() {
+      _gameState = GameState(width: _width, height: _height);
+      _player = Player(
+        x: (_width ~/ 2).toDouble(),
+        y: (_height - 2).toDouble(),
+      );
+      _gameState.addEntity(_player);
+      _gameState.addEntity(EnemyFormation(rows: 3, cols: 8));
+      // Initialize the entities immediately so they render on frame 1
+      _gameState.tick();
+    });
+  }
+
   Future<void> _runGameLoop() async {
     final sw = Stopwatch();
     while (_running) {
@@ -45,7 +59,9 @@ class _GalatermAppState extends State<GalatermApp> {
       if (!mounted) break;
 
       setState(() {
-        _gameState.tick();
+        if (!_gameState.isGameOver) {
+          _gameState.tick();
+        }
       });
 
       final elapsedMs = sw.elapsedMicroseconds / 1000.0;
@@ -128,33 +144,79 @@ class _GalatermAppState extends State<GalatermApp> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ...List.generate(_height, (y) {
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(_width, (x) {
-                        return MouseRegion(
-                          onHover: (event) {
-                            final targetX = (x - (_player.width ~/ 2))
-                                .toDouble();
-                            final targetY = (y - (_player.height ~/ 2))
-                                .toDouble();
-                            _player.moveTo(targetX, targetY);
-                          },
-                          onEnter: (event) {
-                            final targetX = (x - (_player.width ~/ 2))
-                                .toDouble();
-                            final targetY = (y - (_player.height ~/ 2))
-                                .toDouble();
-                            _player.moveTo(targetX, targetY);
-                          },
-                          child: Text(
-                            charMap['$x,$y'] ?? ' ',
-                            style: TextStyle(color: colorMap['$x,$y']),
-                          ),
-                        );
-                      }),
-                    );
-                  }),
+                  if (_gameState.isGameOver)
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          border: BoxBorder.all(style: BoxBorderStyle.double),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'G A M E   O V E R',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFFF0000),
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            Text('Final Score: ${_gameState.score}'),
+                            const SizedBox(height: 2),
+                            GestureDetector(
+                              onTap: () {
+                                _resetGame();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 2,
+                                  vertical: 1,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: BoxBorder.all(
+                                    style: BoxBorderStyle.rounded,
+                                  ),
+                                  color: const Color(0xFF333333),
+                                ),
+                                child: const Text(' RESTART '),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    ...List.generate(_height, (y) {
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(_width, (x) {
+                          return MouseRegion(
+                            onHover: (event) {
+                              final targetX = (x - (_player.width ~/ 2))
+                                  .toDouble();
+                              final targetY = (y - (_player.height ~/ 2))
+                                  .toDouble();
+                              _player.moveTo(targetX, targetY);
+                            },
+                            onEnter: (event) {
+                              final targetX = (x - (_player.width ~/ 2))
+                                  .toDouble();
+                              final targetY = (y - (_player.height ~/ 2))
+                                  .toDouble();
+                              _player.moveTo(targetX, targetY);
+                            },
+                            child: Text(
+                              charMap['$x,$y'] ?? ' ',
+                              style: TextStyle(color: colorMap['$x,$y']),
+                            ),
+                          );
+                        }),
+                      );
+                    }),
                   const SizedBox(height: 1),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
