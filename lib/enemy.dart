@@ -138,7 +138,7 @@ class CruiserEnemy extends Enemy {
     required super.y,
     super.divingSpeed,
     super.returnSpeed,
-  }) : super(health: 15, lines: ['<V>'], color: const Color(0xFFFF00FF));
+  }) : super(health: 40, lines: ['<V>'], color: const Color(0xFFFF00FF));
 }
 
 class SaucerEnemy extends Enemy {
@@ -147,7 +147,7 @@ class SaucerEnemy extends Enemy {
     required super.y,
     super.divingSpeed,
     super.returnSpeed,
-  }) : super(health: 10, lines: ['(-)'], color: const Color(0xFF00FFFF));
+  }) : super(health: 30, lines: ['(-)'], color: const Color(0xFF00FFFF));
 }
 
 class DroneEnemy extends Enemy {
@@ -156,5 +156,5 @@ class DroneEnemy extends Enemy {
     required super.y,
     super.divingSpeed,
     super.returnSpeed,
-  }) : super(health: 5, lines: ['[=]'], color: const Color(0xFFFF0000));
+  }) : super(health: 20, lines: ['[=]'], color: const Color(0xFFFF0000));
 }

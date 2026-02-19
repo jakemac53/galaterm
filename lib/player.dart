@@ -11,7 +11,7 @@ class Player extends Entity {
   double? _targetY;
   final double speed = perFrame(12.0);
   int _fireCooldown = 0;
-  final int _fireInterval = toTicks(0.5);
+  final int _fireInterval = toTicks(0.25);
 
   Player({required super.x, required super.y})
     : super(
@@ -60,7 +60,7 @@ class Player extends Entity {
   void fire(GameState state) {
     if (_fireCooldown == 0) {
       state.addEntity(
-        Projectile(x: x + 1.0, y: y - 1.0, dy: perFrame(-10.0), damage: 5),
+        Projectile(x: x + 1.0, y: y - 1.0, dy: perFrame(-10.0), damage: 10),
       );
       _fireCooldown = _fireInterval;
     }
