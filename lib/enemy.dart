@@ -1,6 +1,10 @@
+import 'dart:math';
 import 'package:nocterm/nocterm.dart';
 
 import 'entity.dart';
+import 'game_state.dart';
+import 'constants.dart';
+import 'player.dart';
 
 class Enemy extends Entity {
   Enemy({
@@ -9,10 +13,113 @@ class Enemy extends Entity {
     super.health = 1,
     super.lines,
     super.color,
-  });
+  }) {
+    formationX = x;
+    formationY = y;
+  }
+
+  bool isDiving = false;
+  bool isReturning = false;
+  double _vx = 0;
+  double _vy = 0;
+  int _nextDirTicks = 0;
+  final Random _rand = Random();
+
+  // The position in the formation this enemy should occupy
+  double formationX = 0;
+  double formationY = 0;
 
   @override
   bool get isEnemy => true;
+
+  void startDive() {
+    isDiving = true;
+    isReturning = false;
+    _nextDirTicks = 0; // Trigger immediate dir calculation
+  }
+
+  @override
+  void move(GameState state) {
+    if (!isDiving && !isReturning) return;
+
+    if (isDiving) {
+      if (_nextDirTicks <= 0) {
+        // Find player
+        Player? player;
+        for (final e in state.entities) {
+          if (e is Player) player = e;
+        }
+
+        double tx = (state.width / 2);
+        double ty = (state.height - 5);
+        if (player != null) {
+          tx = player.x;
+          ty = player.y;
+        }
+
+        // Trend towards player but with some noise
+        final angleToPlayer = atan2(ty - y, tx - x);
+        final spread = (_rand.nextDouble() - 0.5) * 0.5;
+        final angle = angleToPlayer + spread;
+
+        final speed = perFrame(15.0); // Faster than formation
+        _vx = cos(angle) * speed;
+        _vy = sin(angle) * speed;
+
+        // Switch every 1.5 - 3 seconds
+        _nextDirTicks = toTicks(1.5 + _rand.nextDouble() * 1.5);
+      }
+
+      x += _vx;
+      y += _vy;
+      _nextDirTicks--;
+
+      // If off bottom, wrap to top and start returning
+      if (y > state.height) {
+        y = -height.toDouble();
+        isDiving = false;
+        isReturning = true;
+      }
+    } else if (isReturning) {
+      // Move towards formation position
+      final dx = formationX - x;
+      final dy = formationY - y;
+      final dist = sqrt(dx * dx + dy * dy);
+
+      if (dist < 1.0) {
+        x = formationX;
+        y = formationY;
+        isReturning = false;
+      } else {
+        final speed = perFrame(10.0);
+        x += (dx / dist) * speed;
+        y += (dy / dist) * speed;
+      }
+    }
+  }
+
+  @override
+  void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
+    if (health <= 0) return;
+
+    // Check for player collision
+    for (int dy = 0; dy < height; dy++) {
+      for (int dx = 0; dx < width; dx++) {
+        final cellEntities = grid[gridX + dx]?[gridY + dy];
+        if (cellEntities != null) {
+          for (final other in cellEntities) {
+            if (other is Player && other.health > 0) {
+              // Full damage to both
+              other.health = 0;
+              health = 0;
+              state.removeEntity(this);
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 class CruiserEnemy extends Enemy {

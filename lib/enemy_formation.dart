@@ -51,7 +51,7 @@ class EnemyFormation extends Entity {
       state.removeEntity(this);
       return;
     }
-    
+
     // Probability of firing per tick
     if (_rand.nextDouble() < fireRatePerSecond / fps) {
       final firingEnemy = enemies[_rand.nextInt(enemies.length)];
@@ -65,22 +65,49 @@ class EnemyFormation extends Entity {
       );
     }
 
+    // 1. Determine if formation as a whole needs to shift down
     bool hitEdge = false;
     for (final enemy in enemies) {
-      if ((enemy.x <= 0 && _dx < 0) || (enemy.x >= state.width - 1 && _dx > 0)) {
-        hitEdge = true;
-        break;
+      if (!enemy.isDiving && !enemy.isReturning) {
+        if ((enemy.formationX <= 0 && _dx < 0) ||
+            (enemy.formationX >= state.width - 1 && _dx > 0)) {
+          hitEdge = true;
+          break;
+        }
       }
     }
 
+    // 2. Update formation target positions and move entities
     if (hitEdge) {
       _dx = -_dx;
       for (final enemy in enemies) {
-        enemy.y += 1.0;
+        enemy.formationY += 1.0;
+        if (enemy.isDiving || enemy.isReturning) {
+          enemy.move(state); // Update independent movement
+        } else {
+          enemy.y = enemy.formationY;
+          enemy.x = enemy.formationX; // Ensure snapped to formation
+        }
       }
     } else {
       for (final enemy in enemies) {
-        enemy.x += _dx;
+        enemy.formationX += _dx;
+        if (enemy.isDiving || enemy.isReturning) {
+          enemy.move(state); // Update independent movement
+        } else {
+          enemy.x = enemy.formationX;
+          enemy.y = enemy.formationY; // Ensure snapped to formation
+        }
+      }
+    }
+
+    // Occasional dive trigger (chance per tick)
+    if (_rand.nextDouble() < 0.005) {
+      final available = enemies
+          .where((e) => !e.isDiving && !e.isReturning)
+          .toList();
+      if (available.isNotEmpty) {
+        available[_rand.nextInt(available.length)].startDive();
       }
     }
   }
