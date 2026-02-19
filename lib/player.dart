@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:nocterm/nocterm.dart';
 
 import 'entity.dart';
@@ -5,6 +6,10 @@ import 'game_state.dart';
 import 'projectile.dart';
 
 class Player extends Entity {
+  double? _targetX;
+  double? _targetY;
+  double speed = 1.0 / 5;
+
   Player({required super.x, required super.y})
     : super(
         health: 100,
@@ -17,12 +22,34 @@ class Player extends Entity {
 
   @override
   void move(GameState state) {
-    // Future player-specific movement logic
+    if (_targetX == null || _targetY == null) return;
+
+    final dx = _targetX! - x;
+    final dy = _targetY! - y;
+
+    // Terminal characters are typically ~2x taller than they are wide.
+    // We scale dy by 2.0 to calculate a "visual distance" so that
+    // diagonal movement has a consistent perceived speed.
+    final visualDy = dy * 2.0;
+    final visualDistance = sqrt(dx * dx + visualDy * visualDy);
+
+    if (visualDistance <= speed) {
+      x = _targetX!;
+      y = _targetY!;
+    } else {
+      // We step by speed along the visual vector, then convert back to grid units.
+      x += (dx / visualDistance) * speed;
+      y += (dy / visualDistance) * speed;
+    }
+
+    // Clamp to screen bounds
+    x = x.clamp(0.0, (state.width - width).toDouble());
+    y = y.clamp(0.0, (state.height - height).toDouble());
   }
-  
+
   void moveTo(double newX, double newY) {
-    x = newX;
-    y = newY;
+    _targetX = newX;
+    _targetY = newY;
   }
 
   void fire(GameState state) {

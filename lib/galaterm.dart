@@ -138,20 +138,14 @@ class _GalatermAppState extends State<GalatermApp> {
                                 .toDouble();
                             final targetY = (y - (_player.height ~/ 2))
                                 .toDouble();
-                            if (_player.x != targetX || _player.y != targetY) {
-                              _player.moveTo(targetX, targetY);
-                              setState(() {});
-                            }
+                            _player.moveTo(targetX, targetY);
                           },
                           onEnter: (event) {
                             final targetX = (x - (_player.width ~/ 2))
                                 .toDouble();
                             final targetY = (y - (_player.height ~/ 2))
                                 .toDouble();
-                            if (_player.x != targetX || _player.y != targetY) {
-                              _player.moveTo(targetX, targetY);
-                              setState(() {});
-                            }
+                            _player.moveTo(targetX, targetY);
                           },
                           child: Text(
                             charMap['$x,$y'] ?? ' ',
