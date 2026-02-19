@@ -86,6 +86,7 @@ class EnemyFormation extends Entity {
           y: firingEnemy.y + 1.0,
           dy: perFrame(10.0),
           isEnemyProjectile: true,
+          damage: 10,
         ),
       );
     }

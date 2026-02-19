@@ -7,6 +7,7 @@ class Projectile extends Entity {
   final bool isEnemyProjectile;
   final double dx;
   final double dy;
+  final int damage;
 
   Projectile({
     required super.x,
@@ -14,6 +15,7 @@ class Projectile extends Entity {
     this.dx = 0,
     required this.dy,
     this.isEnemyProjectile = false,
+    this.damage = 1,
   }) : super(
          health: 1,
          character: isEnemyProjectile ? 'v' : '|',
@@ -48,11 +50,11 @@ class Projectile extends Entity {
             for (final e in targets.toList()) {
               if (e != this && e.health > 0) {
                 if (isEnemyProjectile && e.isPlayer) {
-                  e.attack(10);
+                  e.attack(damage);
                   state.removeEntity(this);
                   return;
                 } else if (!isEnemyProjectile && e.isEnemy) {
-                  e.attack(1);
+                  e.attack(damage);
                   state.score += 10;
                   state.removeEntity(this);
                   return;

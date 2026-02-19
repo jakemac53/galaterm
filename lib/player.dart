@@ -59,7 +59,9 @@ class Player extends Entity {
 
   void fire(GameState state) {
     if (_fireCooldown == 0) {
-      state.addEntity(Projectile(x: x + 1.0, y: y - 1.0, dy: perFrame(-10.0)));
+      state.addEntity(
+        Projectile(x: x + 1.0, y: y - 1.0, dy: perFrame(-10.0), damage: 5),
+      );
       _fireCooldown = _fireInterval;
     }
   }
