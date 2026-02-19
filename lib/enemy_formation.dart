@@ -10,6 +10,7 @@ class EnemyFormation extends Entity {
   final List<Enemy> enemies = [];
   double _dx;
   final double speed;
+  final double fireRatePerSecond;
   final Random _rand = Random();
 
   @override
@@ -18,9 +19,10 @@ class EnemyFormation extends Entity {
   EnemyFormation({
     required int rows,
     required int cols,
-    double? speed})
-    : speed = speed ?? perFrame(2.0),
-      _dx = speed ?? perFrame(2.0),
+    double? speed,
+    this.fireRatePerSecond = 0.5,
+  }) : speed = speed ?? perFrame(2.0),
+       _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
@@ -50,8 +52,8 @@ class EnemyFormation extends Entity {
       return;
     }
     
-    // Scaled chance per tick to randomly fire a projectile (0.05 / 6.0 approx 0.0083)
-    if (_rand.nextDouble() < 0.0083) {
+    // Probability of firing per tick
+    if (_rand.nextDouble() < fireRatePerSecond / fps) {
       final firingEnemy = enemies[_rand.nextInt(enemies.length)];
       state.addEntity(
         Projectile(

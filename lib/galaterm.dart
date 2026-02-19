@@ -4,6 +4,7 @@ import 'package:nocterm/nocterm.dart';
 import 'enemy_formation.dart';
 import 'game_state.dart';
 import 'player.dart';
+import 'constants.dart';
 
 class GalatermApp extends StatefulComponent {
   const GalatermApp({super.key});
@@ -23,28 +24,73 @@ class _GalatermAppState extends State<GalatermApp> {
   final int _width = 80;
   final int _height = 40;
 
+  int _levelNumber = 1;
+  late Iterator<EnemyFormation> _levels;
+
+  Iterable<EnemyFormation> _generateLevels() sync* {
+    int level = 1;
+    while (true) {
+      yield EnemyFormation(
+        rows: 3,
+        cols: 8,
+        speed: perFrame(2.0 + (level - 1) * 0.5),
+        fireRatePerSecond: 0.3 + (level - 1) * 0.2,
+      );
+      level++;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _levels = _generateLevels().iterator;
+    _levels.moveNext();
     _gameState = GameState(width: _width, height: _height);
     _player = Player(x: (_width ~/ 2).toDouble(), y: (_height - 2).toDouble());
     _gameState.addEntity(_player);
-    _gameState.addEntity(EnemyFormation(rows: 3, cols: 8));
+    _gameState.addEntity(_levels.current);
     // Initialize the entities immediately so they render on frame 1
     _gameState.tick();
 
     _runGameLoop();
   }
 
+  void _nextLevel() {
+    setState(() {
+      _levelNumber++;
+      _levels.moveNext();
+      // Keep player but clear other entities? No, GameState needs careful reset.
+      // Easiest is to keep the current GameState score and player health but reset entities.
+      final oldScore = _gameState.score;
+      final oldHealth = _player.health;
+
+      _gameState = GameState(width: _width, height: _height);
+      _gameState.score = oldScore;
+
+      _player = Player(
+        x: (_width ~/ 2).toDouble(),
+        y: (_height - 2).toDouble(),
+      );
+      _player.health = oldHealth;
+
+      _gameState.addEntity(_player);
+      _gameState.addEntity(_levels.current);
+      _gameState.tick();
+    });
+  }
+
   void _resetGame() {
     setState(() {
+      _levelNumber = 1;
+      _levels = _generateLevels().iterator;
+      _levels.moveNext();
       _gameState = GameState(width: _width, height: _height);
       _player = Player(
         x: (_width ~/ 2).toDouble(),
         y: (_height - 2).toDouble(),
       );
       _gameState.addEntity(_player);
-      _gameState.addEntity(EnemyFormation(rows: 3, cols: 8));
+      _gameState.addEntity(_levels.current);
       // Initialize the entities immediately so they render on frame 1
       _gameState.tick();
     });
@@ -59,7 +105,7 @@ class _GalatermAppState extends State<GalatermApp> {
       if (!mounted) break;
 
       setState(() {
-        if (!_gameState.isGameOver) {
+        if (!_gameState.isGameOver && !_gameState.isLevelComplete) {
           _gameState.tick();
         }
       });
@@ -166,6 +212,8 @@ class _GalatermAppState extends State<GalatermApp> {
                             ),
                             const SizedBox(height: 1),
                             Text('Final Score: ${_gameState.score}'),
+                            const SizedBox(height: 1),
+                            Text('Levels Cleared: ${_levelNumber - 1}'),
                             const SizedBox(height: 2),
                             GestureDetector(
                               onTap: () {
@@ -183,6 +231,53 @@ class _GalatermAppState extends State<GalatermApp> {
                                   color: const Color(0xFF333333),
                                 ),
                                 child: const Text(' RESTART '),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else if (_gameState.isLevelComplete)
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          border: BoxBorder.all(style: BoxBorderStyle.double),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'LEVEL COMPLETE',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF00FF00),
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            Text('Level $_levelNumber Cleared!'),
+                            const SizedBox(height: 1),
+                            Text('Current Score: ${_gameState.score}'),
+                            const SizedBox(height: 2),
+                            GestureDetector(
+                              onTap: () {
+                                _nextLevel();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 2,
+                                  vertical: 1,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: BoxBorder.all(
+                                    style: BoxBorderStyle.rounded,
+                                  ),
+                                  color: const Color(0xFF333333),
+                                ),
+                                child: const Text(' NEXT LEVEL '),
                               ),
                             ),
                           ],

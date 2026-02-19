@@ -22,6 +22,15 @@ class GameState {
     return true;
   }
 
+  bool get isLevelComplete {
+    for (final entity in _entities) {
+      for (final active in entity.activeEntities) {
+        if (active.isEnemy && active.health > 0) return false;
+      }
+    }
+    return true;
+  }
+
   void addEntity(Entity entity) {
     _pendingAdds.add(entity);
   }
