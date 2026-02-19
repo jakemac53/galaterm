@@ -51,20 +51,19 @@ class Enemy extends Entity {
         }
 
         double tx = (state.width / 2);
-        double ty = (state.height - 5);
         if (player != null) {
           tx = player.x;
-          ty = player.y;
         }
 
-        // Trend towards player but with some noise
-        final angleToPlayer = atan2(ty - y, tx - x);
-        final spread = (_rand.nextDouble() - 0.5) * 0.5;
-        final angle = angleToPlayer + spread;
+        // Fixed downward speed
+        _vy = perFrame(12.0);
 
-        final speed = perFrame(15.0); // Faster than formation
-        _vx = cos(angle) * speed;
-        _vy = sin(angle) * speed;
+        // Trend X towards player with some noise
+        final dx = tx - x;
+        final xSpeed = perFrame(8.0);
+        _vx =
+            (dx > 0 ? xSpeed : -xSpeed) +
+            (_rand.nextDouble() - 0.5) * perFrame(4.0);
 
         // Switch every 1.5 - 3 seconds
         _nextDirTicks = toTicks(1.5 + _rand.nextDouble() * 1.5);
