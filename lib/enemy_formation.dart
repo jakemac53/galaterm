@@ -24,8 +24,8 @@ class EnemyFormation extends Entity {
        super(x: 0.0, y: 0.0, character: ' ') {
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
-        final double ex = (10 + c * 8).toDouble();
-        final double ey = (2 + r * 3).toDouble();
+        final double ex = (10 + c * 5).toDouble();
+        final double ey = (2 + r * 2).toDouble();
 
         if (r == 0) {
           enemies.add(CruiserEnemy(x: ex, y: ey));
