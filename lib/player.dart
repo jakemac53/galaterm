@@ -4,13 +4,14 @@ import 'package:nocterm/nocterm.dart';
 import 'entity.dart';
 import 'game_state.dart';
 import 'projectile.dart';
+import 'constants.dart';
 
 class Player extends Entity {
   double? _targetX;
   double? _targetY;
-  double speed = .2;
+  final double speed = perFrame(12.0);
   int _fireCooldown = 0;
-  static const int _fireInterval = 30;
+  final int _fireInterval = toTicks(0.5);
 
   Player({required super.x, required super.y})
     : super(
@@ -58,7 +59,7 @@ class Player extends Entity {
 
   void fire(GameState state) {
     if (_fireCooldown == 0) {
-      state.addEntity(Projectile(x: x + 1.0, y: y - 1.0, dy: -1.0 / 6.0));
+      state.addEntity(Projectile(x: x + 1.0, y: y - 1.0, dy: perFrame(-10.0)));
       _fireCooldown = _fireInterval;
     }
   }

@@ -4,6 +4,7 @@ import 'entity.dart';
 import 'enemy.dart';
 import 'game_state.dart';
 import 'projectile.dart';
+import 'constants.dart';
 
 class EnemyFormation extends Entity {
   final List<Enemy> enemies = [];
@@ -17,8 +18,9 @@ class EnemyFormation extends Entity {
   EnemyFormation({
     required int rows,
     required int cols,
-    this.speed = 1.0 / 30.0,
-  }) : _dx = speed,
+    double? speed})
+    : speed = speed ?? perFrame(2.0),
+      _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
@@ -55,7 +57,7 @@ class EnemyFormation extends Entity {
         Projectile(
           x: firingEnemy.x,
           y: firingEnemy.y + 1.0,
-          dy: 1.0 / 6.0,
+          dy: perFrame(10.0),
           isEnemyProjectile: true,
         ),
       );
