@@ -9,6 +9,9 @@ class Player extends Entity {
   double? _targetX;
   double? _targetY;
   double speed = 1.0 / 5;
+  int _fireCooldown = 0;
+  // 30 ticks = 0.5s at 60fps
+  static const int _fireInterval = 30;
 
   Player({required super.x, required super.y})
     : super(
@@ -45,6 +48,8 @@ class Player extends Entity {
     // Clamp to screen bounds
     x = x.clamp(0.0, (state.width - width).toDouble());
     y = y.clamp(0.0, (state.height - height).toDouble());
+
+    if (_fireCooldown > 0) _fireCooldown--;
   }
 
   void moveTo(double newX, double newY) {
@@ -53,6 +58,9 @@ class Player extends Entity {
   }
 
   void fire(GameState state) {
-    state.addEntity(Projectile(x: x + 1.0, y: y - 1.0, dy: -1.0 / 6.0));
+    if (_fireCooldown == 0) {
+      state.addEntity(Projectile(x: x + 1.0, y: y - 1.0, dy: -1.0 / 6.0));
+      _fireCooldown = _fireInterval;
+    }
   }
 }
