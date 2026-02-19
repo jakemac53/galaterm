@@ -20,12 +20,12 @@ class Player extends Entity {
     // Future player-specific movement logic
   }
   
-  void moveTo(int newX, int newY) {
+  void moveTo(double newX, double newY) {
     x = newX;
     y = newY;
   }
 
   void fire(GameState state) {
-    state.addEntity(Projectile(x: x + 1, y: y - 1, dy: -1));
+    state.addEntity(Projectile(x: x + 1.0, y: y - 1.0, dy: -1.0 / 6.0));
   }
 }

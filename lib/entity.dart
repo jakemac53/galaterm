@@ -2,8 +2,8 @@ import 'package:nocterm/nocterm.dart';
 import 'game_state.dart';
 
 abstract class Entity {
-  int x;
-  int y;
+  double x;
+  double y;
   int health;
   List<String> lines;
   Color? color;
@@ -16,6 +16,9 @@ abstract class Entity {
     List<String>? lines,
     this.color,
   }) : lines = lines ?? [character ?? ' '];
+
+  int get gridX => x.round();
+  int get gridY => y.round();
 
   int get width => lines.isEmpty
       ? 0

@@ -36,8 +36,8 @@ class GameState {
             for (int dx = 0; dx < e.width; dx++) {
               if (e.lines[dy].length > dx && e.lines[dy][dx] != ' ') {
                 final list = grid
-                    .putIfAbsent(e.x + dx, () => {})
-                    .putIfAbsent(e.y + dy, () => []);
+                    .putIfAbsent(e.gridX + dx, () => {})
+                    .putIfAbsent(e.gridY + dy, () => []);
                 if (!list.contains(e)) list.add(e);
               }
             }

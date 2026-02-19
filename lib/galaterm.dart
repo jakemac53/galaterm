@@ -24,13 +24,13 @@ class _GalatermAppState extends State<GalatermApp> {
   void initState() {
     super.initState();
     _gameState = GameState(width: _width, height: _height);
-    _player = Player(x: _width ~/ 2, y: _height - 2);
+    _player = Player(x: (_width ~/ 2).toDouble(), y: (_height - 2).toDouble());
     _gameState.addEntity(_player);
     _gameState.addEntity(EnemyFormation(rows: 3, cols: 8));
     // Initialize the entities immediately so they render on frame 1
     _gameState.tick();
 
-    _gameLoop = Timer.periodic(const Duration(milliseconds: 100), (_) {
+    _gameLoop = Timer.periodic(const Duration(milliseconds: 16), (_) {
       setState(() {
         _gameState.tick();
       });
@@ -57,7 +57,7 @@ class _GalatermAppState extends State<GalatermApp> {
               if (active.lines[dy].length > dx) {
                 final char = active.lines[dy][dx];
                 if (char != ' ') {
-                  final key = '${active.x + dx},${active.y + dy}';
+                  final key = '${active.gridX + dx},${active.gridY + dy}';
                   charMap[key] = char;
                   colorMap[key] = active.color;
                 }
@@ -99,16 +99,20 @@ class _GalatermAppState extends State<GalatermApp> {
                       children: List.generate(_width, (x) {
                         return MouseRegion(
                           onHover: (event) {
-                            final targetX = x - (_player.width ~/ 2);
-                            final targetY = y - (_player.height ~/ 2);
+                            final targetX = (x - (_player.width ~/ 2))
+                                .toDouble();
+                            final targetY = (y - (_player.height ~/ 2))
+                                .toDouble();
                             if (_player.x != targetX || _player.y != targetY) {
                               _player.moveTo(targetX, targetY);
                               setState(() {});
                             }
                           },
                           onEnter: (event) {
-                            final targetX = x - (_player.width ~/ 2);
-                            final targetY = y - (_player.height ~/ 2);
+                            final targetX = (x - (_player.width ~/ 2))
+                                .toDouble();
+                            final targetY = (y - (_player.height ~/ 2))
+                                .toDouble();
                             if (_player.x != targetX || _player.y != targetY) {
                               _player.moveTo(targetX, targetY);
                               setState(() {});

@@ -5,8 +5,8 @@ import 'game_state.dart';
 
 class Projectile extends Entity {
   final bool isEnemyProjectile;
-  final int dx;
-  final int dy;
+  final double dx;
+  final double dy;
 
   Projectile({
     required super.x,
@@ -30,7 +30,10 @@ class Projectile extends Entity {
     x += dx;
     y += dy;
 
-    if (x < 0 || x >= state.width || y < 0 || y >= state.height) {
+    if (x < 0 ||
+        x >= state.width.toDouble() ||
+        y < 0 ||
+        y >= state.height.toDouble()) {
       state.removeEntity(this);
     }
   }
@@ -40,7 +43,7 @@ class Projectile extends Entity {
     for (int pdy = 0; pdy < height; pdy++) {
       for (int pdx = 0; pdx < width; pdx++) {
         if (lines[pdy].length > pdx && lines[pdy][pdx] != ' ') {
-          final targets = grid[x + pdx]?[y + pdy];
+          final targets = grid[gridX + pdx]?[gridY + pdy];
           if (targets != null) {
             for (final e in targets.toList()) {
               if (e != this && e.health > 0) {

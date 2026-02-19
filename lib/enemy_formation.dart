@@ -7,20 +7,23 @@ import 'projectile.dart';
 
 class EnemyFormation extends Entity {
   final List<Enemy> enemies = [];
-  int _dx = 1;
-  int _tickCount = 0;
-  final int moveInterval;
+  double _dx;
+  final double speed;
   final Random _rand = Random();
 
   @override
   bool get isEnemy => true;
 
-  EnemyFormation({required int rows, required int cols, this.moveInterval = 5})
-      : super(x: 0, y: 0, character: ' ') {
+  EnemyFormation({
+    required int rows,
+    required int cols,
+    this.speed = 1.0 / 30.0,
+  }) : _dx = speed,
+       super(x: 0.0, y: 0.0, character: ' ') {
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
-        final ex = 10 + c * 8;
-        final ey = 2 + r * 3;
+        final double ex = (10 + c * 8).toDouble();
+        final double ey = (2 + r * 3).toDouble();
 
         if (r == 0) {
           enemies.add(CruiserEnemy(x: ex, y: ey));
@@ -45,24 +48,18 @@ class EnemyFormation extends Entity {
       return;
     }
     
-    // 5% chance per active tick to randomly fire a projectile
-    if (_rand.nextDouble() < 0.05) {
+    // Scaled chance per tick to randomly fire a projectile (0.05 / 6.0 approx 0.0083)
+    if (_rand.nextDouble() < 0.0083) {
       final firingEnemy = enemies[_rand.nextInt(enemies.length)];
       state.addEntity(
         Projectile(
           x: firingEnemy.x,
-          y: firingEnemy.y + 1,
-          dy: 1,
+          y: firingEnemy.y + 1.0,
+          dy: 1.0 / 6.0,
           isEnemyProjectile: true,
         ),
       );
     }
-
-    _tickCount++;
-    if (_tickCount < moveInterval) {
-      return;
-    }
-    _tickCount = 0;
 
     bool hitEdge = false;
     for (final enemy in enemies) {
@@ -75,7 +72,7 @@ class EnemyFormation extends Entity {
     if (hitEdge) {
       _dx = -_dx;
       for (final enemy in enemies) {
-        enemy.y += 1;
+        enemy.y += 1.0;
       }
     } else {
       for (final enemy in enemies) {
