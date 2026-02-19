@@ -136,4 +136,11 @@ class EnemyFormation extends Entity {
       }
     }
   }
+
+  @override
+  void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
+    for (final enemy in enemies.toList()) {
+      enemy.collide(state, grid);
+    }
+  }
 }

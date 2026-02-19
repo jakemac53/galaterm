@@ -113,10 +113,16 @@ class Enemy extends Entity {
         if (cellEntities != null) {
           for (final other in cellEntities) {
             if (other is Player && other.health > 0) {
-              // Full damage to both
-              other.health = 0;
-              health = 0;
-              state.removeEntity(this);
+              // Damage each other based on current health
+              final enemyDamage = health;
+              final playerDamage = other.health;
+
+              other.attack(enemyDamage);
+              attack(playerDamage);
+
+              if (health <= 0) {
+                state.removeEntity(this);
+              }
               return;
             }
           }
@@ -132,7 +138,7 @@ class CruiserEnemy extends Enemy {
     required super.y,
     super.divingSpeed,
     super.returnSpeed,
-  }) : super(health: 3, lines: ['<AA>'], color: const Color(0xFFFF00FF));
+  }) : super(health: 3, lines: ['<VV>'], color: const Color(0xFFFF00FF));
 }
 
 class SaucerEnemy extends Enemy {
