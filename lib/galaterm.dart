@@ -348,6 +348,24 @@ class _GalatermAppState extends State<GalatermApp> {
                               100 + (_player.armorUpgradeLevel * 50),
                               () => _buyUpgrade('armor'),
                             ),
+                            _buildUpgradeRow(
+                              'Missiles',
+                              _player.homingMissileLevel == 0
+                                  ? 'Buy'
+                                  : 'Lvl Up',
+                              _player.homingMissileLevel == 0
+                                  ? 1000
+                                  : 100 + (_player.homingMissileLevel * 50),
+                              () => _buyUpgrade('missile'),
+                            ),
+                            _buildUpgradeRow(
+                              'Laser',
+                              _player.laserBeamLevel == 0 ? 'Buy' : 'Lvl Up',
+                              _player.laserBeamLevel == 0
+                                  ? 2500
+                                  : 100 + (_player.laserBeamLevel * 50),
+                              () => _buyUpgrade('laser'),
+                            ),
                             const SizedBox(height: 2),
                             GestureDetector(
                               onTap: () {
@@ -523,6 +541,22 @@ class _GalatermAppState extends State<GalatermApp> {
           _gameState.galabucks -= cost;
           _player.armorUpgradeLevel++;
           _player.health = _player.maxHealth;
+        }
+      } else if (type == 'missile') {
+        int cost = _player.homingMissileLevel == 0
+            ? 1000
+            : 100 + (_player.homingMissileLevel * 50);
+        if (_gameState.galabucks >= cost) {
+          _gameState.galabucks -= cost;
+          _player.homingMissileLevel++;
+        }
+      } else if (type == 'laser') {
+        int cost = _player.laserBeamLevel == 0
+            ? 2500
+            : 100 + (_player.laserBeamLevel * 50);
+        if (_gameState.galabucks >= cost) {
+          _gameState.galabucks -= cost;
+          _player.laserBeamLevel++;
         }
       }
     });

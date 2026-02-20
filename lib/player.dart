@@ -29,6 +29,11 @@ class Player extends Entity {
   int speedUpgradeLevel = 0;
   int bulletStrengthUpgradeLevel = 0;
   int armorUpgradeLevel = 0;
+  int homingMissileLevel = 0;
+  int laserBeamLevel = 0;
+
+  int _homingCooldown = 0;
+  int _laserCooldown = 0;
 
   Player({required super.x, required super.y})
     : super(
@@ -71,6 +76,8 @@ class Player extends Entity {
     if (_fireCooldown > 0) _fireCooldown--;
     if (_speedBoostTicks > 0) _speedBoostTicks--;
     if (_rapidFireTicks > 0) _rapidFireTicks--;
+    if (_homingCooldown > 0) _homingCooldown--;
+    if (_laserCooldown > 0) _laserCooldown--;
 
     // Fire damage: 1 damage every 0.2s (12 ticks at 60fps) for 5s
     if (_onFireTicks > 0) {
@@ -78,6 +85,25 @@ class Player extends Entity {
         attack(1);
       }
       _onFireTicks--;
+    }
+
+    if (homingMissileLevel > 0 && _homingCooldown <= 0) {
+      state.addEntity(
+        HomingMissile(
+          x: x + width,
+          y: y,
+          speedLevel: homingMissileLevel,
+          damage: 15 + homingMissileLevel * 5,
+        ),
+      );
+      _homingCooldown = toTicks(1.0);
+    }
+
+    if (laserBeamLevel > 0 && _laserCooldown <= 0) {
+      state.addEntity(
+        LaserBeam(x: x - 1.0, y: y, damagePerTick: 2 + laserBeamLevel * 2),
+      );
+      _laserCooldown = toTicks(5.0);
     }
 
     fire(state);
