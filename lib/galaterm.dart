@@ -148,6 +148,7 @@ class _GalatermAppState extends State<GalatermApp> {
     // In a sparse grid, this is much faster than iterating over entities on every cell rendering.
     final charMap = <String, String>{};
     final colorMap = <String, Color?>{};
+    final bgMap = <String, Color?>{};
     for (final e in _gameState.entities) {
       for (final active in e.activeEntities) {
         if (active.health > 0) {
@@ -159,6 +160,7 @@ class _GalatermAppState extends State<GalatermApp> {
                   final key = '${active.gridX + dx},${active.gridY + dy}';
                   charMap[key] = char;
                   colorMap[key] = active.color;
+                  bgMap[key] = active.backgroundColor;
                 }
               }
             }
@@ -312,7 +314,10 @@ class _GalatermAppState extends State<GalatermApp> {
                             },
                             child: Text(
                               charMap['$x,$y'] ?? ' ',
-                              style: TextStyle(color: colorMap['$x,$y']),
+                              style: TextStyle(
+                                color: colorMap['$x,$y'],
+                                backgroundColor: bgMap['$x,$y'],
+                              ),
                             ),
                           );
                         }),

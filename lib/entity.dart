@@ -7,6 +7,7 @@ abstract class Entity {
   int health;
   List<String> lines;
   Color? color;
+  Color? backgroundColor;
 
   Entity({
     required this.x,
@@ -15,6 +16,7 @@ abstract class Entity {
     String? character,
     List<String>? lines,
     this.color,
+    this.backgroundColor,
   }) : lines = lines ?? [character ?? ' '];
 
   int get gridX => x.round();

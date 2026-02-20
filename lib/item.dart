@@ -10,7 +10,12 @@ class Item extends Entity {
   final ItemType type;
 
   Item({required super.x, required super.y, required this.type})
-    : super(health: 1, character: _getChar(type), color: _getColor(type));
+    : super(
+        health: 1,
+        character: _getChar(type),
+        color: _getContrastColor(type),
+        backgroundColor: _getBgColor(type),
+      );
 
   static String _getChar(ItemType type) {
     switch (type) {
@@ -27,7 +32,7 @@ class Item extends Entity {
     }
   }
 
-  static Color _getColor(ItemType type) {
+  static Color _getBgColor(ItemType type) {
     switch (type) {
       case ItemType.money:
         return const Color(0xFFFFD700);
@@ -39,6 +44,16 @@ class Item extends Entity {
         return const Color(0xFF1E90FF);
       case ItemType.rapidFire:
         return const Color(0xFFFF00FF);
+    }
+  }
+
+  static Color _getContrastColor(ItemType type) {
+    switch (type) {
+      case ItemType.money:
+      case ItemType.shield:
+        return const Color(0xFF000000); // Black for bright backgrounds
+      default:
+        return const Color(0xFFFFFFFF); // White for darker backgrounds
     }
   }
 
