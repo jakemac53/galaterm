@@ -149,21 +149,19 @@ class EnemyFormation extends Entity {
       _dx = -_dx;
       for (final enemy in enemies) {
         enemy.formationY += 1.0;
-        if (enemy.isDiving || enemy.isReturning) {
-          enemy.move(state); // Update independent movement
-        } else {
+        enemy.move(state);
+        if (!enemy.isDiving && !enemy.isReturning && enemy is! BossEnemy) {
           enemy.y = enemy.formationY;
-          enemy.x = enemy.formationX; // Ensure snapped to formation
+          enemy.x = enemy.formationX;
         }
       }
     } else {
       for (final enemy in enemies) {
         enemy.formationX += _dx;
-        if (enemy.isDiving || enemy.isReturning) {
-          enemy.move(state); // Update independent movement
-        } else {
+        enemy.move(state);
+        if (!enemy.isDiving && !enemy.isReturning && enemy is! BossEnemy) {
           enemy.x = enemy.formationX;
-          enemy.y = enemy.formationY; // Ensure snapped to formation
+          enemy.y = enemy.formationY;
         }
       }
     }
