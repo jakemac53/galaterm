@@ -162,7 +162,6 @@ class DroneEnemy extends Enemy {
 
 class BossEnemy extends Enemy {
   int _shotCooldown = 0;
-  int _diveCooldown = 0;
 
   BossEnemy({required super.x, required super.y})
     : super(
@@ -180,16 +179,12 @@ class BossEnemy extends Enemy {
 
   @override
   void move(GameState state) {
-    if (isDiving || isReturning) {
-      super.move(state);
-    } else {
-      // Boss hovers in a wide sweeping pattern
-      x = 28.0 + 22.0 * sin(state.ticks / 40.0);
-      y = 5.0 + 3.0 * cos(state.ticks / 25.0);
-    }
+    // Boss only hovers in a wide sweeping pattern now
+    x = 28.0 + 22.0 * sin(state.ticks / 40.0);
+    y = 5.0 + 3.0 * cos(state.ticks / 25.0);
 
-    // Boss fires 4 projectiles constantly if not returning
-    if (!isReturning && _shotCooldown <= 0) {
+    // Boss fires 4 projectiles constantly
+    if (_shotCooldown <= 0) {
       final cannons = [2, 8, 16, 22]; // Approximate X offsets for guns
       for (final offset in cannons) {
         state.addEntity(
@@ -204,15 +199,6 @@ class BossEnemy extends Enemy {
       }
       _shotCooldown = toTicks(0.8); // Slower fire rate
     }
-
-    // Hard cooldown: at most one dive every 15 seconds
-    if (!isDiving && !isReturning && _diveCooldown <= 0) {
-      if (_rand.nextDouble() < 0.0005) {
-        startDive();
-        _diveCooldown = toTicks(15.0);
-      }
-    }
     if (_shotCooldown > 0) _shotCooldown--;
-    if (_diveCooldown > 0) _diveCooldown--;
   }
 }
