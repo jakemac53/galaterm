@@ -30,9 +30,10 @@ class EnemyFormation extends Entity {
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
+    // 3 rows, 8 cols = 24 enemies
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
-        final double ex = (10 + c * 5).toDouble();
+        final double ex = (24 + c * 4).toDouble();
         final double ey = (2 + r * 2).toDouble();
 
         if (r == 0) {
@@ -75,21 +76,31 @@ class EnemyFormation extends Entity {
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
-    for (int r = 0; r < 5; r++) {
-      final cols = r == 4 ? [4] : [r, 8 - r];
-      for (final c in cols) {
-        final double ex = (20 + c * 5).toDouble();
+    // Solid V-shape (Arrow), ~24 enemies
+    final pattern = [
+      [0, 1, 2, 3, 4, 5, 6, 7, 8], // Row 0 (Top wide)
+      [1, 2, 3, 4, 5, 6, 7], // Row 1
+      [2, 3, 4, 5, 6], // Row 2
+      [3, 4, 5], // Row 3 (Bottom point)
+    ];
+    for (int r = 0; r < pattern.length; r++) {
+      for (final c in pattern[r]) {
+        final double ex = (22 + c * 4).toDouble();
         final double ey = (2 + r * 2).toDouble();
-        if (r < 2) {
+        
+        // Outer edges vs Inner core
+        final isOuter = c == pattern[r].first || c == pattern[r].last || r == 0;
+
+        if (isOuter) {
           enemies.add(
-            CruiserEnemy(
+            DroneEnemy(
               x: ex,
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
             ),
           );
-        } else if (r < 4) {
+        } else if (r == 1) {
           enemies.add(
             SaucerEnemy(
               x: ex,
@@ -100,7 +111,7 @@ class EnemyFormation extends Entity {
           );
         } else {
           enemies.add(
-            DroneEnemy(
+            CruiserEnemy(
               x: ex,
               y: ey,
               divingSpeed: divingSpeed,
@@ -120,31 +131,37 @@ class EnemyFormation extends Entity {
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
+    // Filled diamond, ~25 enemies
     final pattern = [
-      [4], // Row 0
-      [3, 5], // Row 1
-      [2, 6], // Row 2
-      [1, 7], // Row 3 (center)
-      [2, 6], // Row 4
-      [3, 5], // Row 5
-      [4], // Row 6
+      [3], // Row 0
+      [2, 3, 4], // Row 1
+      [1, 2, 3, 4, 5], // Row 2
+      [0, 1, 2, 3, 4, 5, 6], // Row 3 (center)
+      [1, 2, 3, 4, 5], // Row 4
+      [2, 3, 4], // Row 5
+      [3], // Row 6
     ];
     for (int r = 0; r < pattern.length; r++) {
       for (final c in pattern[r]) {
-        final double ex = (20 + c * 5).toDouble();
+        final double ex = (26 + c * 4).toDouble();
         final double ey = (2 + r * 2).toDouble();
-        if (r == 0 || r == 6) {
+        
+        final isOuter =
+            c == pattern[r].first || c == pattern[r].last || r == 0 || r == 6;
+
+        if (isOuter) {
           enemies.add(
-            CruiserEnemy(
+            SaucerEnemy(
               x: ex,
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
             ),
           );
-        } else if (r == 1 || r == 5) {
+        } else if (c == 3 && r == 3) {
+          // Absolute center
           enemies.add(
-            SaucerEnemy(
+            CruiserEnemy(
               x: ex,
               y: ey,
               divingSpeed: divingSpeed,
@@ -173,11 +190,24 @@ class EnemyFormation extends Entity {
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
-    for (int r = 0; r < 4; r++) {
-      for (final c in [0, 1, 7, 8]) {
-        final double ex = (15 + c * 5).toDouble();
+    // 6 rows * 4 cols (2 left, 2 right) = 24 enemies
+    for (int r = 0; r < 6; r++) {
+      for (final c in [0, 1, 6, 7]) {
+        final double ex = (24 + c * 4).toDouble();
         final double ey = (2 + r * 2).toDouble();
-        if (r == 0) {
+        
+        final isOuterColumn = c == 0 || c == 7;
+
+        if (isOuterColumn) {
+          enemies.add(
+            DroneEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        } else if (r < 2) {
           enemies.add(
             CruiserEnemy(
               x: ex,
@@ -186,18 +216,9 @@ class EnemyFormation extends Entity {
               returnSpeed: returnSpeed,
             ),
           );
-        } else if (r == 1) {
-          enemies.add(
-            SaucerEnemy(
-              x: ex,
-              y: ey,
-              divingSpeed: divingSpeed,
-              returnSpeed: returnSpeed,
-            ),
-          );
         } else {
           enemies.add(
-            DroneEnemy(
+            SaucerEnemy(
               x: ex,
               y: ey,
               divingSpeed: divingSpeed,
