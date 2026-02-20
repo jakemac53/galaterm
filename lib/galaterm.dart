@@ -561,13 +561,24 @@ class _GalatermAppState extends State<GalatermApp> {
   void _skipToBoss() {
     setState(() {
       // Find the next boss level (multiple of 5)
-      while ((_levelNumber + 1) % 5 != 0) {
+      while ((_levelNumber) % 5 != 0) {
         _levelNumber++;
         _levels.moveNext();
       }
-      _nextLevel();
       // Also give some cash for testing
       _gameState.galabucks += 5000;
+      
+      // Instead of calling _nextLevel directly which bypasses the upgrade
+      // screen, we just wipe out the current enemies. The game loop will
+      // detect the level is complete and show the upgrade screen.
+      // The _nextLevel function will then be called when the user clicks NEXT LEVEL.
+      // We must remove all enemies from the current GameState.
+      final entitiesToRemove = _gameState.entities.where((e) {
+        return e.activeEntities.any((active) => active.isEnemy);
+      }).toList();
+      for (final e in entitiesToRemove) {
+        _gameState.removeEntity(e);
+      }
     });
   }
 }
