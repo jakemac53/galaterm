@@ -57,7 +57,7 @@ class BombProjectile extends Entity {
             final dy = (e.y - y) * 2.0; // TerminalAspectRatio
             final dist = sqrt(dx * dx + dy * dy);
             if (dist <= _radius) {
-              e.attack(1);
+              e.attack(5);
             }
           }
         }
