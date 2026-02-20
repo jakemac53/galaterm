@@ -180,6 +180,10 @@ class _GalatermAppState extends State<GalatermApp> {
             _player.fire(_gameState);
             return true;
           }
+          if (event.character?.toLowerCase() == 'b') {
+            _player.useBomb(_gameState);
+            return true;
+          }
           return false;
         },
         child: Center(
@@ -342,7 +346,7 @@ class _GalatermAppState extends State<GalatermApp> {
                   ),
                   const SizedBox(height: 1),
                   const Text(
-                    'Use mouse to move. Press SPACE to fire. Press "q" to quit.',
+                    'Use mouse to move. Press SPACE to fire. Press "b" for bomb. Press "q" to quit.',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],

@@ -114,6 +114,20 @@ class Player extends Entity {
       _fireCooldown = fireInterval;
     }
   }
+
+  void useBomb(GameState state) {
+    if (state.bombs > 0) {
+      state.bombs--;
+      // Deal massive damage to all enemies
+      for (final entity in state.entities) {
+        if (entity.isEnemy) {
+          for (final e in entity.activeEntities) {
+            e.attack(100);
+          }
+        }
+      }
+    }
+  }
 }
 
 class Shield extends Entity {
