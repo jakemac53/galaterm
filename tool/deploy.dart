@@ -55,7 +55,11 @@ void main() async {
       // We don't exit here, might just be nothing to commit, so we can still try to push.
     }
     
-    final pushResult = await Process.run('git', ['push', 'origin', 'main'], workingDirectory: '../jakemac53.github.io/');
+    final pushResult = await Process.run('git', [
+      'push',
+      'origin',
+      'master',
+    ], workingDirectory: '../jakemac53.github.io/');
     if (pushResult.exitCode != 0) {
       print('git push failed: ${pushResult.stderr}');
       exit(1);
