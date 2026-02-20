@@ -64,16 +64,21 @@ class _GalatermAppState extends State<GalatermApp> {
       // Keep player but clear other entities? No, GameState needs careful reset.
       // Easiest is to keep the current GameState score and player health but reset entities.
       final oldScore = _gameState.score;
+      final oldGalabucks = _gameState.galabucks;
+      final oldBombs = _gameState.bombs;
       final oldHealth = _player.health;
 
       _gameState = GameState(width: _width, height: _height);
       _gameState.score = oldScore;
+      _gameState.galabucks = oldGalabucks;
+      _gameState.bombs = oldBombs;
 
-      _player = Player(
-        x: (_width ~/ 2).toDouble(),
-        y: (_height - 2).toDouble(),
-      );
+      // Reuse the same player instance to keep all powerup states and shield health
+      _player.x = (_width ~/ 2).toDouble();
+      _player.y = (_height - 2).toDouble();
       _player.health = oldHealth;
+      // Clear movement targets for the new level
+      _player.moveTo(_player.x, _player.y); 
 
       _gameState.addEntity(_player);
       _gameState.addEntity(_levels.current);

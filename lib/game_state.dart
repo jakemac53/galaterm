@@ -1,4 +1,5 @@
 import 'entity.dart';
+import 'item.dart';
 
 class GameState {
   final int width;
@@ -28,6 +29,7 @@ class GameState {
     for (final entity in _entities) {
       for (final active in entity.activeEntities) {
         if (active.isEnemy && active.health > 0) return false;
+        if (active is Item && active.health > 0) return false;
       }
     }
     return true;
