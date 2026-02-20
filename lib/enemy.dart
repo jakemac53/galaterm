@@ -288,3 +288,138 @@ class BossEnemy extends Enemy {
     if (_shotCooldown > 0) _shotCooldown--;
   }
 }
+
+class HydraBossEnemy extends Enemy {
+  int _shotCooldown = 0;
+  final int splitLevel;
+
+  HydraBossEnemy({
+    required super.x,
+    required super.y,
+    this.splitLevel = 0,
+    double vx = 4.0,
+    double vy = 2.0,
+  }) : super(
+         health: 1200 ~/ (pow(2, splitLevel)),
+         lines: _getLinesForLevel(splitLevel),
+         color: const Color(0xFF00FF00),
+       ) {
+    _vx = vx;
+    _vy = vy;
+  }
+
+  static List<String> _getLinesForLevel(int level) {
+    if (level == 0) {
+      return [
+        r'    /----------\    ',
+        r'   /| °      ° |\   ',
+        r'  / |   ^  ^   | \  ',
+        r' |  | \====/   |  | ',
+        r' |__|__________|__| ',
+        r'  \/            \/  ',
+      ];
+    }
+    if (level == 1) {
+      return [
+        r'   /------\   ',
+        r'  /| °  ° |\  ',
+        r' | | \==/ | | ',
+        r' |\|______|/| ',
+        r'  \/      \/  ',
+      ];
+    }
+    if (level == 2) {
+      return [r'  /----\  ', r' / °  ° \ ', r' \  ==  / ', r'  \____/  '];
+    }
+    return [r' /--\ ', r' |><| ', r' \__/ '];
+  }
+
+  @override
+  void move(GameState state) {
+    x += perFrame(_vx);
+    y += perFrame(_vy);
+
+    // Bounce off walls
+    if (x <= 0) {
+      _vx = _vx.abs();
+      x = 0;
+    } else if (x >= state.width - width) {
+      _vx = -_vx.abs();
+      x = state.width - width.toDouble();
+    }
+
+    if (y <= 0) {
+      _vy = _vy.abs();
+      y = 0;
+    } else if (y >= state.height * 0.6) {
+      _vy = -_vy.abs();
+      y = state.height * 0.6;
+    }
+
+    if (_shotCooldown <= 0) {
+      final cannons = <double>[];
+      if (splitLevel == 0) {
+        cannons.addAll([4, width / 2.0 - 1, width - 5]);
+      } else if (splitLevel == 1) {
+        cannons.addAll([2, width - 3]);
+      } else {
+        cannons.add(width / 2.0);
+      }
+      for (final offset in cannons) {
+        state.addEntity(
+          Projectile(
+            x: x + offset,
+            y: y + height.toDouble(),
+            dy: perFrame(10.0 + splitLevel * 3),
+            isEnemyProjectile: true,
+            damage: 10,
+          ),
+        );
+      }
+      _shotCooldown = toTicks(1.5 - splitLevel * 0.2);
+    }
+    if (_shotCooldown > 0) _shotCooldown--;
+  }
+
+  @override
+  void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
+    if (health <= 0) return;
+    final int prevHealth = health;
+    super.collide(state, grid);
+    if (health <= 0 && prevHealth > 0) {
+      _triggerSplit(state);
+    }
+  }
+
+  void receiveDamage(int damage, GameState state) {
+    health -= damage;
+    if (health <= 0) {
+      _triggerSplit(state);
+      state.removeEntity(this);
+    }
+  }
+
+  void _triggerSplit(GameState state) {
+    if (splitLevel < 3) {
+      // Break into two smaller ones
+      state.addEntity(
+        HydraBossEnemy(
+          x: x,
+          y: y,
+          splitLevel: splitLevel + 1,
+          vx: -(_vx.abs() + 2.0),
+          vy: -(_vy.abs() + 1.0),
+        ),
+      );
+      state.addEntity(
+        HydraBossEnemy(
+          x: x + width / 2,
+          y: y,
+          splitLevel: splitLevel + 1,
+          vx: _vx.abs() + 2.0,
+          vy: -(_vy.abs() + 1.0),
+        ),
+      );
+    }
+  }
+}

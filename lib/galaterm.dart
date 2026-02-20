@@ -34,7 +34,11 @@ class _GalatermAppState extends State<GalatermApp> {
     final rand = Random();
     while (true) {
       if (level % 5 == 0) {
-        yield EnemyFormation.boss(x: 35, y: 5);
+        if (level % 10 == 0) {
+          yield EnemyFormation.hydraBoss(x: 35, y: 5);
+        } else {
+          yield EnemyFormation.boss(x: 35, y: 5);
+        }
       } else {
         final speed = perFrame(2.0 + (level - 1) * 0.5);
         final fireRatePerSecond = 0.3 + (level - 1) * 0.2;

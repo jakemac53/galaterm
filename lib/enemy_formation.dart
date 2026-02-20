@@ -240,6 +240,16 @@ class EnemyFormation extends Entity {
     enemies.add(BossEnemy(x: x, y: y));
   }
 
+  EnemyFormation.hydraBoss({required double x, required double y})
+    : speed = 0,
+      _dx = 0,
+      fireRatePerSecond = 0,
+      divingSpeed = 0,
+      returnSpeed = 0,
+      super(x: 0, y: 0, character: ' ') {
+    enemies.add(HydraBossEnemy(x: x, y: y));
+  }
+
   @override
   Iterable<Entity> get activeEntities => enemies;
 
@@ -248,7 +258,8 @@ class EnemyFormation extends Entity {
     // Collect dying enemies to check for drops
     final dying = enemies.where((e) => e.health <= 0).toList();
     for (final enemy in dying) {
-      if (enemy is BossEnemy) {
+      if (enemy is BossEnemy ||
+          (enemy is HydraBossEnemy && enemy.splitLevel == 3)) {
         // Massive Boss explosion: grid of explosions
         for (int i = 0; i < 3; i++) {
           for (int j = 0; j < 2; j++) {
@@ -272,6 +283,16 @@ class EnemyFormation extends Entity {
             ),
           );
         }
+      } else if (enemy is HydraBossEnemy) {
+        // Hydra boss splits instead of completely blowing up if it's not the final split level
+        state.addEntity(
+          Explosion(
+            x: enemy.x + enemy.width / 2,
+            y: enemy.y + enemy.height / 2,
+            count: 10,
+            color: const Color(0xFF00FF00),
+          ),
+        );
       } else {
         // Standard enemy explosion
         state.addEntity(
@@ -302,6 +323,15 @@ class EnemyFormation extends Entity {
       }
     }
     enemies.removeWhere((e) => e.health <= 0);
+
+    // If hydra bosses were destroyed, find their splits in the game state and add them back to the formation
+    for (final e in state.entities) {
+      if (e is HydraBossEnemy &&
+          !enemies.contains(e) &&
+          _pendingHydraSplits(e)) {
+        enemies.add(e);
+      }
+    }
 
     if (enemies.isEmpty) {
       state.removeEntity(this);
@@ -372,5 +402,11 @@ class EnemyFormation extends Entity {
     for (final enemy in enemies.toList()) {
       enemy.collide(state, grid);
     }
+  }
+
+  bool _pendingHydraSplits(HydraBossEnemy e) {
+    // The state entity is added when the boss splits
+    // The game state iterates this next tick.
+    return true;
   }
 }
