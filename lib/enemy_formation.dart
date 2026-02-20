@@ -293,6 +293,7 @@ class EnemyFormation extends Entity {
             color: const Color(0xFF00FF00),
           ),
         );
+        enemies.addAll(enemy.split());
       } else {
         // Standard enemy explosion
         state.addEntity(
@@ -324,15 +325,6 @@ class EnemyFormation extends Entity {
     }
     enemies.removeWhere((e) => e.health <= 0);
 
-    // If hydra bosses were destroyed, find their splits in the game state and add them back to the formation
-    for (final e in state.entities) {
-      if (e is HydraBossEnemy &&
-          !enemies.contains(e) &&
-          _pendingHydraSplits(e)) {
-        enemies.add(e);
-      }
-    }
-
     if (enemies.isEmpty) {
       state.removeEntity(this);
       return;
@@ -355,7 +347,10 @@ class EnemyFormation extends Entity {
     // 1. Determine if formation as a whole needs to shift down
     bool hitEdge = false;
     for (final enemy in enemies) {
-      if (!enemy.isDiving && !enemy.isReturning) {
+      if (!enemy.isDiving &&
+          !enemy.isReturning &&
+          enemy is! BossEnemy &&
+          enemy is! HydraBossEnemy) {
         if ((enemy.formationX <= 0 && _dx < 0) ||
             (enemy.formationX >= state.width - 1 && _dx > 0)) {
           hitEdge = true;
@@ -368,18 +363,28 @@ class EnemyFormation extends Entity {
     if (hitEdge) {
       _dx = -_dx;
       for (final enemy in enemies) {
-        enemy.formationY += 1.0;
+        if (enemy is! HydraBossEnemy) {
+          enemy.formationY += 1.0;
+        }
         enemy.move(state);
-        if (!enemy.isDiving && !enemy.isReturning && enemy is! BossEnemy) {
+        if (!enemy.isDiving &&
+            !enemy.isReturning &&
+            enemy is! BossEnemy &&
+            enemy is! HydraBossEnemy) {
           enemy.y = enemy.formationY;
           enemy.x = enemy.formationX;
         }
       }
     } else {
       for (final enemy in enemies) {
-        enemy.formationX += _dx;
+        if (enemy is! HydraBossEnemy) {
+          enemy.formationX += _dx;
+        }
         enemy.move(state);
-        if (!enemy.isDiving && !enemy.isReturning && enemy is! BossEnemy) {
+        if (!enemy.isDiving &&
+            !enemy.isReturning &&
+            enemy is! BossEnemy &&
+            enemy is! HydraBossEnemy) {
           enemy.x = enemy.formationX;
           enemy.y = enemy.formationY;
         }
@@ -402,11 +407,5 @@ class EnemyFormation extends Entity {
     for (final enemy in enemies.toList()) {
       enemy.collide(state, grid);
     }
-  }
-
-  bool _pendingHydraSplits(HydraBossEnemy e) {
-    // The state entity is added when the boss splits
-    // The game state iterates this next tick.
-    return true;
   }
 }

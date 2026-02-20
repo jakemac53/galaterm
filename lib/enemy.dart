@@ -381,45 +381,23 @@ class HydraBossEnemy extends Enemy {
     if (_shotCooldown > 0) _shotCooldown--;
   }
 
-  @override
-  void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
-    if (health <= 0) return;
-    final int prevHealth = health;
-    super.collide(state, grid);
-    if (health <= 0 && prevHealth > 0) {
-      _triggerSplit(state);
-    }
-  }
-
-  void receiveDamage(int damage, GameState state) {
-    health -= damage;
-    if (health <= 0) {
-      _triggerSplit(state);
-      state.removeEntity(this);
-    }
-  }
-
-  void _triggerSplit(GameState state) {
-    if (splitLevel < 3) {
-      // Break into two smaller ones
-      state.addEntity(
-        HydraBossEnemy(
-          x: x,
-          y: y,
-          splitLevel: splitLevel + 1,
-          vx: -(_vx.abs() + 2.0),
-          vy: -(_vy.abs() + 1.0),
-        ),
-      );
-      state.addEntity(
-        HydraBossEnemy(
-          x: x + width / 2,
-          y: y,
-          splitLevel: splitLevel + 1,
-          vx: _vx.abs() + 2.0,
-          vy: -(_vy.abs() + 1.0),
-        ),
-      );
-    }
+  List<HydraBossEnemy> split() {
+    if (splitLevel >= 3) return [];
+    return [
+      HydraBossEnemy(
+        x: x,
+        y: y,
+        splitLevel: splitLevel + 1,
+        vx: -(_vx.abs() + 2.0),
+        vy: -(_vy.abs() + 1.0),
+      ),
+      HydraBossEnemy(
+        x: x + width / 2,
+        y: y,
+        splitLevel: splitLevel + 1,
+        vx: _vx.abs() + 2.0,
+        vy: -(_vy.abs() + 1.0),
+      ),
+    ];
   }
 }
