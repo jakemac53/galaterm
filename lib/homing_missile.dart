@@ -22,6 +22,8 @@ class HomingMissile extends Projectile {
          colors: [
            const Color(0xFF4682B4), // Steely blue
            const Color(0xFFFFFF00), // Yellow
+           const Color(0xFFFFA500), // Orange
+           const Color(0xFFFF0000), // Red
          ],
        );
 
@@ -94,6 +96,74 @@ class HomingMissile extends Projectile {
         x >= state.width.toDouble() ||
         y < 0 ||
         y >= state.height.toDouble()) {
+      state.removeEntity(this);
+    }
+  }
+
+  @override
+  void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
+    if (health <= 0) return;
+
+    // Check if we will hit something
+    bool willHit = false;
+    for (int pdy = 0; pdy < height; pdy++) {
+      for (int pdx = 0; pdx < width; pdx++) {
+        if (lines[pdy].length > pdx && lines[pdy][pdx] != ' ') {
+          final targets = grid[gridX + pdx]?[gridY + pdy];
+          if (targets != null) {
+            for (final e in targets.toList()) {
+              if (e != this && e.health > 0 && e is! Projectile && e.isEnemy) {
+                willHit = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (willHit) {
+      // Cause a tiny explosion! (Radius 3)
+      final radius = 3.0; // Very small explosion
+      final numPoints = (radius * 6).toInt();
+      for (int i = 0; i < numPoints; i++) {
+        final angle = (2 * pi * i) / numPoints;
+        final dx = cos(angle) * radius;
+        final dy = sin(angle) * radius * 0.5;
+        state.addEntity(_MissileExplosionParticle(x: x + dx, y: y + dy));
+      }
+
+      // Deal Area Of Effect Damage to all enemies in radius
+      for (final entity in state.entities) {
+        if (entity.isEnemy) {
+          for (final e in entity.activeEntities) {
+            final targetDx = e.x - x;
+            final targetDy = (e.y - y) * 2.0;
+            final dist = sqrt(targetDx * targetDx + targetDy * targetDy);
+            if (dist <= radius && e.health > 0) {
+              e.attack((damage * 0.5).toInt()); // 50% splash damage
+            }
+          }
+        }
+      }
+    }
+
+    // Call standard projectile collide to deal direct damage and remove self
+    super.collide(state, grid);
+  }
+}
+
+class _MissileExplosionParticle extends Entity {
+  int _ticksRemaining = 6; // Lasts 0.1s
+
+  _MissileExplosionParticle({required super.x, required super.y})
+    : super(health: 1, character: '*', color: const Color(0xFFFF4500));
+
+  @override
+  void move(GameState state) {
+    _ticksRemaining--;
+    if (_ticksRemaining <= 0) {
+      health = 0;
       state.removeEntity(this);
     }
   }
