@@ -205,8 +205,8 @@ class BossEnemy extends Enemy {
     }
     if (_shotCooldown > 0) _shotCooldown--;
 
-    // Reduced diving frequency for boss
-    if (!isDiving && !isReturning && _rand.nextDouble() < 0.008) {
+    // Drastically reduced diving frequency for boss to show off movement pattern
+    if (!isDiving && !isReturning && _rand.nextDouble() < 0.001) {
       startDive();
     }
   }
