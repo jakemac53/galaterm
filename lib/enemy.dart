@@ -5,6 +5,7 @@ import 'entity.dart';
 import 'game_state.dart';
 import 'constants.dart';
 import 'player.dart';
+import 'projectile.dart';
 
 class Enemy extends Entity {
   Enemy({
@@ -157,4 +158,54 @@ class DroneEnemy extends Enemy {
     super.divingSpeed,
     super.returnSpeed,
   }) : super(health: 20, lines: ['[=]'], color: const Color(0xFFFF0000));
+}
+
+class BossEnemy extends Enemy {
+  int _shotCooldown = 0;
+
+  BossEnemy({required super.x, required super.y})
+    : super(
+        health: 1000,
+        lines: [r'  /MMMMM\  ', r' <|XXXXX|> ', r'  \WWWWW/  ', r'   v   v   '],
+        color: const Color(0xFFFF0000),
+      );
+
+  @override
+  void move(GameState state) {
+    if (isDiving || isReturning) {
+      super.move(state);
+    } else {
+      // Boss hovers back and forth at the top
+      x = 35.0 + 15.0 * sin(state.ticks / 60.0);
+    }
+
+    // Boss fires constantly if not returning
+    if (!isReturning && _shotCooldown <= 0) {
+      state.addEntity(
+        Projectile(
+          x: x + 2,
+          y: y + 4,
+          dy: perFrame(15.0),
+          isEnemyProjectile: true,
+          damage: 15,
+        ),
+      );
+      state.addEntity(
+        Projectile(
+          x: x + 8,
+          y: y + 4,
+          dy: perFrame(15.0),
+          isEnemyProjectile: true,
+          damage: 15,
+        ),
+      );
+      _shotCooldown = toTicks(0.5);
+    }
+    if (_shotCooldown > 0) _shotCooldown--;
+
+    // High frequency diving for boss
+    if (!isDiving && !isReturning && _rand.nextDouble() < 0.01) {
+      startDive();
+    }
+  }
 }

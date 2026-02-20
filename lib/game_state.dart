@@ -7,6 +7,7 @@ class GameState {
   int score = 0;
   int galabucks = 0;
   int bombs = 0;
+  int ticks = 0;
 
   final List<Entity> _entities = [];
   final List<Entity> _pendingAdds = [];
@@ -44,6 +45,7 @@ class GameState {
   }
 
   void tick() {
+    ticks++;
     // Move all enemies
     for (final entity in _entities) {
       entity.move(this);

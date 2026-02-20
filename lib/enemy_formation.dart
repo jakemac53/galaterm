@@ -66,6 +66,16 @@ class EnemyFormation extends Entity {
     }
   }
 
+  EnemyFormation.boss({required double x, required double y})
+    : speed = 0,
+      _dx = 0,
+      fireRatePerSecond = 0,
+      divingSpeed = 0,
+      returnSpeed = 0,
+      super(x: 0, y: 0, character: ' ') {
+    enemies.add(BossEnemy(x: x, y: y));
+  }
+
   @override
   Iterable<Entity> get activeEntities => enemies;
 
@@ -74,9 +84,30 @@ class EnemyFormation extends Entity {
     // Collect dying enemies to check for drops
     final dying = enemies.where((e) => e.health <= 0).toList();
     for (final enemy in dying) {
-      if (_rand.nextDouble() < 0.2) {
-        // 20% drop chance
-        final type = ItemType.values[_rand.nextInt(ItemType.values.length)];
+      if (enemy is BossEnemy) {
+        // Boss Jackpot! 10 money items
+        for (int i = 0; i < 10; i++) {
+          state.addEntity(
+            Item(
+              x: enemy.x + _rand.nextInt(10),
+              y: enemy.y + _rand.nextInt(4),
+              type: ItemType.money,
+            ),
+          );
+        }
+      } else if (_rand.nextDouble() < 0.3) {
+        // 30% drop chance for normal enemies
+        ItemType type;
+        final r = _rand.nextDouble();
+        if (r < 0.6) {
+          type = ItemType.money; // 60% of drops are money
+        } else {
+          // Remaining 40% split between others
+          final otherTypes = ItemType.values
+              .where((t) => t != ItemType.money)
+              .toList();
+          type = otherTypes[_rand.nextInt(otherTypes.length)];
+        }
         state.addEntity(Item(x: enemy.x, y: enemy.y, type: type));
       }
     }
