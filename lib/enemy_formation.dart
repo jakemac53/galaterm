@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:nocterm/nocterm.dart';
 
 import 'entity.dart';
 import 'enemy.dart';
@@ -97,6 +98,19 @@ class EnemyFormation extends Entity {
     final dying = enemies.where((e) => e.health <= 0).toList();
     for (final enemy in dying) {
       if (enemy is BossEnemy) {
+        // Massive Boss explosion: grid of explosions
+        for (int i = 0; i < 3; i++) {
+          for (int j = 0; j < 2; j++) {
+            state.addEntity(
+              Explosion(
+                x: enemy.x + i * 8 + _rand.nextInt(4),
+                y: enemy.y + j * 3 + _rand.nextInt(2),
+                count: 12,
+                color: const Color(0xFFFF0000),
+              ),
+            );
+          }
+        }
         // Boss Jackpot! 15 money items spread across its large hull
         for (int i = 0; i < 15; i++) {
           state.addEntity(
@@ -107,20 +121,33 @@ class EnemyFormation extends Entity {
             ),
           );
         }
-      } else if (_rand.nextDouble() < 0.3) {
-        // 30% drop chance for normal enemies
-        ItemType type;
-        final r = _rand.nextDouble();
-        if (r < 0.6) {
-          type = ItemType.money; // 60% of drops are money
-        } else {
-          // Remaining 40% split between others
-          final otherTypes = ItemType.values
-              .where((t) => t != ItemType.money)
-              .toList();
-          type = otherTypes[_rand.nextInt(otherTypes.length)];
+      } else {
+        // Standard enemy explosion
+        state.addEntity(
+          Explosion(
+            x: enemy.x + enemy.width / 2,
+            y: enemy.y + enemy.height / 2,
+            color: enemy is FireEnemy
+                ? const Color(0xFFFF4500)
+                : const Color(0xFFFFFF00),
+          ),
+        );
+
+        if (_rand.nextDouble() < 0.3) {
+          // 30% drop chance for normal enemies
+          ItemType type;
+          final r = _rand.nextDouble();
+          if (r < 0.6) {
+            type = ItemType.money; // 60% of drops are money
+          } else {
+            // Remaining 40% split between others
+            final otherTypes = ItemType.values
+                .where((t) => t != ItemType.money)
+                .toList();
+            type = otherTypes[_rand.nextInt(otherTypes.length)];
+          }
+          state.addEntity(Item(x: enemy.x, y: enemy.y, type: type));
         }
-        state.addEntity(Item(x: enemy.x, y: enemy.y, type: type));
       }
     }
     enemies.removeWhere((e) => e.health <= 0);

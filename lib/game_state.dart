@@ -1,5 +1,9 @@
+import 'dart:math';
+import 'package:nocterm/nocterm.dart';
+
 import 'entity.dart';
 import 'item.dart';
+import 'constants.dart';
 
 class GameState {
   final int width;
@@ -82,5 +86,68 @@ class GameState {
       _entities.remove(entity);
     }
     _pendingRemoves.clear();
+  }
+}
+
+class Explosion extends Entity {
+  final List<ExplosionParticle> _particles = [];
+  int _ticksRemaining = toTicks(0.5);
+
+  Explosion({
+    required super.x,
+    required super.y,
+    int count = 8,
+    Color color = const Color(0xFFFFFF00),
+  }) : super(health: 1) {
+    final rand = Random();
+    for (int i = 0; i < count; i++) {
+      final angle = rand.nextDouble() * 2 * pi;
+      final speed = 2.0 + rand.nextDouble() * 4.0;
+      _particles.add(
+        ExplosionParticle(
+          x: x,
+          y: y,
+          dx: perFrame(cos(angle) * speed),
+          dy: perFrame(sin(angle) * speed * 0.5),
+          character: i % 2 == 0 ? '*' : '+',
+          color: color,
+        ),
+      );
+    }
+  }
+
+  @override
+  void move(GameState state) {
+    for (final p in _particles) {
+      p.move(state);
+    }
+    _ticksRemaining--;
+    if (_ticksRemaining <= 0) {
+      health = 0;
+      state.removeEntity(this);
+    }
+  }
+
+  @override
+  Iterable<Entity> get activeEntities => _particles;
+}
+
+class ExplosionParticle extends Entity {
+  final double dx;
+  final double dy;
+
+  ExplosionParticle({
+    required super.x,
+    required super.y,
+    required this.dx,
+    required this.dy,
+    required String character,
+    required super.color,
+  }) : super(health: 1, character: character);
+
+  @override
+  void move(GameState state) {
+    x += dx;
+    y += dy;
   }
 }
