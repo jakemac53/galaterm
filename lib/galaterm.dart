@@ -298,19 +298,19 @@ class _GalatermAppState extends State<GalatermApp> {
                             _buildUpgradeRow(
                               'Engines',
                               'Speed +2',
-                              (_player.speedUpgradeLevel + 1) * 500,
+                              100 + (_player.speedUpgradeLevel * 50),
                               () => _buyUpgrade('speed'),
                             ),
                             _buildUpgradeRow(
                               'Cannons',
                               'Dmg +5',
-                              (_player.bulletStrengthUpgradeLevel + 1) * 1000,
+                              100 + (_player.bulletStrengthUpgradeLevel * 50),
                               () => _buyUpgrade('bullet'),
                             ),
                             _buildUpgradeRow(
                               'Armor',
                               'HP +25',
-                              (_player.armorUpgradeLevel + 1) * 750,
+                              100 + (_player.armorUpgradeLevel * 50),
                               () => _buyUpgrade('armor'),
                             ),
                             const SizedBox(height: 2),
@@ -460,19 +460,19 @@ class _GalatermAppState extends State<GalatermApp> {
   void _buyUpgrade(String type) {
     setState(() {
       if (type == 'speed') {
-        int cost = (_player.speedUpgradeLevel + 1) * 500;
+        int cost = 100 + (_player.speedUpgradeLevel * 50);
         if (_gameState.galabucks >= cost) {
           _gameState.galabucks -= cost;
           _player.speedUpgradeLevel++;
         }
       } else if (type == 'bullet') {
-        int cost = (_player.bulletStrengthUpgradeLevel + 1) * 1000;
+        int cost = 100 + (_player.bulletStrengthUpgradeLevel * 50);
         if (_gameState.galabucks >= cost) {
           _gameState.galabucks -= cost;
           _player.bulletStrengthUpgradeLevel++;
         }
       } else if (type == 'armor') {
-        int cost = (_player.armorUpgradeLevel + 1) * 750;
+        int cost = 100 + (_player.armorUpgradeLevel * 50);
         if (_gameState.galabucks >= cost) {
           _gameState.galabucks -= cost;
           _player.armorUpgradeLevel++;
