@@ -331,7 +331,11 @@ class _GalatermAppState extends State<GalatermApp> {
                         ),
                       ),
                       Text(
-                        'Score: ${_gameState.score} | FPS: ${_fps.toStringAsFixed(1)} | Frame: ${_avgFrameTime.toStringAsFixed(2)}ms',
+                        'Score: ${_gameState.score} | Galabucks: ${_gameState.galabucks} | Bombs: ${_gameState.bombs}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'FPS: ${_fps.toStringAsFixed(1)} | Frame: ${_avgFrameTime.toStringAsFixed(2)}ms',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],

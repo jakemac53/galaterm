@@ -5,6 +5,7 @@ import 'enemy.dart';
 import 'game_state.dart';
 import 'projectile.dart';
 import 'constants.dart';
+import 'item.dart';
 
 class EnemyFormation extends Entity {
   final List<Enemy> enemies = [];
@@ -70,6 +71,15 @@ class EnemyFormation extends Entity {
 
   @override
   void move(GameState state) {
+    // Collect dying enemies to check for drops
+    final dying = enemies.where((e) => e.health <= 0).toList();
+    for (final enemy in dying) {
+      if (_rand.nextDouble() < 0.2) {
+        // 20% drop chance
+        final type = ItemType.values[_rand.nextInt(ItemType.values.length)];
+        state.addEntity(Item(x: enemy.x, y: enemy.y, type: type));
+      }
+    }
     enemies.removeWhere((e) => e.health <= 0);
 
     if (enemies.isEmpty) {

@@ -5,13 +5,18 @@ import 'entity.dart';
 import 'game_state.dart';
 import 'projectile.dart';
 import 'constants.dart';
+import 'item.dart';
 
 class Player extends Entity {
   double? _targetX;
   double? _targetY;
-  final double speed = perFrame(12.0);
+  double get speed => _speedBoostTicks > 0 ? perFrame(24.0) : perFrame(12.0);
   int _fireCooldown = 0;
-  final int _fireInterval = toTicks(0.25);
+  int get fireInterval => _rapidFireTicks > 0 ? toTicks(0.125) : toTicks(0.25);
+
+  int _shieldHealth = 0;
+  int _speedBoostTicks = 0;
+  int _rapidFireTicks = 0;
 
   Player({required super.x, required super.y})
     : super(
@@ -50,6 +55,50 @@ class Player extends Entity {
     y = y.clamp(0.0, (state.height - height).toDouble());
 
     if (_fireCooldown > 0) _fireCooldown--;
+    if (_speedBoostTicks > 0) _speedBoostTicks--;
+    if (_rapidFireTicks > 0) _rapidFireTicks--;
+  }
+
+  @override
+  Iterable<Entity> get activeEntities => [
+    this,
+    if (_shieldHealth > 0) Shield(x: x, y: y - 1, health: _shieldHealth),
+  ];
+
+  void collect(Item item, GameState state) {
+    switch (item.type) {
+      case ItemType.money:
+        state.galabucks += 100;
+        break;
+      case ItemType.bomb:
+        state.bombs += 1;
+        break;
+      case ItemType.shield:
+        _shieldHealth += 25;
+        break;
+      case ItemType.speedBoost:
+        _speedBoostTicks = toTicks(10.0);
+        break;
+      case ItemType.rapidFire:
+        _rapidFireTicks = toTicks(10.0);
+        break;
+    }
+  }
+
+  @override
+  void attack(int damage) {
+    if (_shieldHealth > 0) {
+      if (_shieldHealth >= damage) {
+        _shieldHealth -= damage;
+        return;
+      } else {
+        final remaining = damage - _shieldHealth;
+        _shieldHealth = 0;
+        super.attack(remaining);
+        return;
+      }
+    }
+    super.attack(damage);
   }
 
   void moveTo(double newX, double newY) {
@@ -62,7 +111,21 @@ class Player extends Entity {
       state.addEntity(
         Projectile(x: x + 1.0, y: y - 1.0, dy: perFrame(-10.0), damage: 10),
       );
-      _fireCooldown = _fireInterval;
+      _fireCooldown = fireInterval;
     }
+  }
+}
+
+class Shield extends Entity {
+  Shield({required super.x, required super.y, required super.health})
+    : super(lines: ['___'], color: _getShieldColor(health));
+
+  static Color _getShieldColor(int health) {
+    if (health >= 25) return const Color(0xFF00FF00); // Full or multiple
+
+    final double ratio = health / 25.0;
+    final r = (255 * (1.0 - ratio)).toInt();
+    final g = (255 * ratio).toInt();
+    return Color.fromARGB(255, r, g, 0);
   }
 }

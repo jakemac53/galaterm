@@ -4,6 +4,8 @@ class GameState {
   final int width;
   final int height;
   int score = 0;
+  int galabucks = 0;
+  int bombs = 0;
 
   final List<Entity> _entities = [];
   final List<Entity> _pendingAdds = [];
