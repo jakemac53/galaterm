@@ -48,7 +48,7 @@ class Projectile extends Entity {
           final targets = grid[gridX + pdx]?[gridY + pdy];
           if (targets != null) {
             for (final e in targets.toList()) {
-              if (e != this && e.health > 0) {
+              if (e != this && e.health > 0 && e is! Projectile) {
                 if (isEnemyProjectile && e.isPlayer) {
                   e.attack(damage);
                   state.removeEntity(this);

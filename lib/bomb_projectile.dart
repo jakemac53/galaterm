@@ -3,7 +3,6 @@ import 'package:nocterm/nocterm.dart';
 import 'entity.dart';
 import 'game_state.dart';
 import 'constants.dart';
-import 'projectile.dart';
 
 class BombProjectile extends Entity {
   bool _exploded = false;
@@ -42,7 +41,7 @@ class BombProjectile extends Entity {
       final list = grid[gridX]?[gridY];
       if (list != null) {
         for (final e in list) {
-          if (e != this && (e.isEnemy || e is Projectile)) {
+          if (e != this && e.isEnemy) {
             explode();
             return;
           }

@@ -202,7 +202,7 @@ class _GalatermAppState extends State<GalatermApp> {
             return false;
           }
 
-          if (event.character?.toLowerCase() == 'b') {
+          if (event.character == ' ') {
             _player.useBomb(_gameState);
             return true;
           }
@@ -456,7 +456,7 @@ class _GalatermAppState extends State<GalatermApp> {
                   ),
                   const SizedBox(height: 1),
                   const Text(
-                    'Use mouse to move. B: bomb. P: pause. Q: quit.',
+                    'Use mouse to move. Space: bomb. P: pause. Q: quit.',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
