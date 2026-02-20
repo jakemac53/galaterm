@@ -165,7 +165,7 @@ class BossEnemy extends Enemy {
 
   BossEnemy({required super.x, required super.y})
     : super(
-        health: 2500,
+        health: 1500,
         lines: [
           r'   _____        _____   ',
           r'  /     \      /     \  ',
@@ -195,18 +195,18 @@ class BossEnemy extends Enemy {
           Projectile(
             x: x + offset,
             y: y + 5,
-            dy: perFrame(18.0),
+            dy: perFrame(14.0),
             isEnemyProjectile: true,
-            damage: 20,
+            damage: 10,
           ),
         );
       }
-      _shotCooldown = toTicks(0.4); // Faster fire rate
+      _shotCooldown = toTicks(0.8); // Slower fire rate
     }
     if (_shotCooldown > 0) _shotCooldown--;
 
-    // High frequency diving for boss
-    if (!isDiving && !isReturning && _rand.nextDouble() < 0.012) {
+    // Reduced diving frequency for boss
+    if (!isDiving && !isReturning && _rand.nextDouble() < 0.008) {
       startDive();
     }
   }
