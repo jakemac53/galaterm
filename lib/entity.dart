@@ -5,6 +5,7 @@ abstract class Entity {
   double x;
   double y;
   int health;
+  int maxHealth;
   List<String> lines;
   Color? color;
   List<Color>? colors; // new per-line color list
@@ -14,12 +15,14 @@ abstract class Entity {
     required this.x,
     required this.y,
     this.health = 10,
+    int? maxHealth,
     String? character,
     List<String>? lines,
     this.color,
     this.colors,
     this.backgroundColor,
-  }) : lines = lines ?? [character ?? ' '];
+  }) : maxHealth = maxHealth ?? health,
+       lines = lines ?? [character ?? ' '];
 
   int get gridX => x.round();
   int get gridY => y.round();

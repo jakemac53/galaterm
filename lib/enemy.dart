@@ -243,17 +243,19 @@ class FlameProjectile extends Projectile {
 class BossEnemy extends Enemy {
   int _shotCooldown = 0;
 
+  static const _baseLines = [
+    r'   _____        _____   ',
+    r'  /     \      /     \  ',
+    r' <|XXXXX|======|XXXXX|> ',
+    r'  \MMMMM/  ||  \MMMMM/  ',
+    r'   |___|  /MM\  |___|   ',
+    r'   v   v  \WW/  v   v   ',
+  ];
+
   BossEnemy({required super.x, required super.y, int healthMultiplier = 1})
     : super(
         health: 1500 * healthMultiplier,
-        lines: [
-          r'   _____        _____   ',
-          r'  /     \      /     \  ',
-          r' <|XXXXX|======|XXXXX|> ',
-          r'  \MMMMM/  ||  \MMMMM/  ',
-          r'   |___|  /MM\  |___|   ',
-          r'   v   v  \WW/  v   v   ',
-        ],
+        lines: _baseLines,
         color: const Color(0xFFFF3333),
       );
 
@@ -309,6 +311,19 @@ class BossEnemy extends Enemy {
       }
     }
     if (_shotCooldown > 0) _shotCooldown--;
+
+    // Update health bar
+    int barWidth = 20;
+    int bars = (health / max(1, maxHealth) * barWidth).round().clamp(
+      0,
+      barWidth,
+    );
+    final healthBar = '  [' + '=' * bars + ' ' * (barWidth - bars) + ']  ';
+    lines = [healthBar, ..._baseLines];
+    colors = [
+      const Color(0xFF00FF00), // Green for health bar
+      ...List.filled(_baseLines.length, const Color(0xFFFF3333)),
+    ];
   }
 }
 
@@ -405,6 +420,31 @@ class HydraBossEnemy extends Enemy {
       _shotCooldown = toTicks(1.5 - splitLevel * 0.2);
     }
     if (_shotCooldown > 0) _shotCooldown--;
+
+    // Update health bar
+    final _baseLines = _getLinesForLevel(splitLevel);
+    int barWidth = max(10, _baseLines[0].length - 4);
+    int bars = (health / max(1, maxHealth) * barWidth).round().clamp(
+      0,
+      barWidth,
+    );
+
+    // Center the health bar above the boss sprite
+    int padding = max(0, (_baseLines[0].length - (barWidth + 2)) ~/ 2);
+    String paddingStr = ' ' * padding;
+    final healthBar =
+        paddingStr +
+        '[' +
+        '=' * bars +
+        ' ' * (barWidth - bars) +
+        ']' +
+        paddingStr;
+
+    lines = [healthBar, ..._baseLines];
+    colors = [
+      const Color(0xFF00FF00), // Green for health bar
+      ...List.filled(_baseLines.length, const Color(0xFF00FF00)),
+    ];
   }
 
   List<HydraBossEnemy> split() {
