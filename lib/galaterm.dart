@@ -183,6 +183,8 @@ class _GalatermAppState extends State<GalatermApp> {
             shutdownApp();
             return true;
           }
+          if (_gameState.isGameOver || _gameState.isLevelComplete) return false;
+
           if (event.logicalKey == LogicalKey.space || event.character == ' ') {
             _player.fire(_gameState);
             return true;
@@ -273,7 +275,31 @@ class _GalatermAppState extends State<GalatermApp> {
                             const SizedBox(height: 1),
                             Text('Level $_levelNumber Cleared!'),
                             const SizedBox(height: 1),
-                            Text('Current Score: ${_gameState.score}'),
+                            Text('Galabucks: ${_gameState.galabucks}'),
+                            const SizedBox(height: 2),
+                            const Text(
+                              '--- U P G R A D E S ---',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 1),
+                            _buildUpgradeRow(
+                              'Engines',
+                              'Speed +2',
+                              (_player.speedUpgradeLevel + 1) * 500,
+                              () => _buyUpgrade('speed'),
+                            ),
+                            _buildUpgradeRow(
+                              'Cannons',
+                              'Dmg +5',
+                              (_player.bulletStrengthUpgradeLevel + 1) * 1000,
+                              () => _buyUpgrade('bullet'),
+                            ),
+                            _buildUpgradeRow(
+                              'Armor',
+                              'HP +25',
+                              (_player.armorUpgradeLevel + 1) * 750,
+                              () => _buyUpgrade('armor'),
+                            ),
                             const SizedBox(height: 2),
                             GestureDetector(
                               onTap: () {
@@ -335,13 +361,15 @@ class _GalatermAppState extends State<GalatermApp> {
                       SizedBox(
                         width: 30,
                         child: ProgressBar(
-                          value: (_player.health / 100.0).clamp(0.0, 1.0),
-                          valueColor: _player.health > 20
+                          value: (_player.health / _player.maxHealth.toDouble())
+                              .clamp(0.0, 1.0),
+                          valueColor: _player.health > (_player.maxHealth * 0.2)
                               ? const Color(0xFF00FF00)
                               : const Color(0xFFFF0000),
                           backgroundColor: const Color(0xFF333333),
                           showPercentage: false,
-                          label: 'Health: ${_player.health}',
+                          label:
+                              'Health: ${_player.health}/${_player.maxHealth}',
                         ),
                       ),
                       Text(
@@ -365,6 +393,61 @@ class _GalatermAppState extends State<GalatermApp> {
           ),
         ),
       ),
+    );
+  }
+
+  void _buyUpgrade(String type) {
+    setState(() {
+      if (type == 'speed') {
+        int cost = (_player.speedUpgradeLevel + 1) * 500;
+        if (_gameState.galabucks >= cost) {
+          _gameState.galabucks -= cost;
+          _player.speedUpgradeLevel++;
+        }
+      } else if (type == 'bullet') {
+        int cost = (_player.bulletStrengthUpgradeLevel + 1) * 1000;
+        if (_gameState.galabucks >= cost) {
+          _gameState.galabucks -= cost;
+          _player.bulletStrengthUpgradeLevel++;
+        }
+      } else if (type == 'armor') {
+        int cost = (_player.armorUpgradeLevel + 1) * 750;
+        if (_gameState.galabucks >= cost) {
+          _gameState.galabucks -= cost;
+          _player.armorUpgradeLevel++;
+          _player.health = _player.maxHealth;
+        }
+      }
+    });
+  }
+
+  Component _buildUpgradeRow(
+    String name,
+    String effect,
+    int cost,
+    VoidCallback onBuy,
+  ) {
+    final canAfford = _gameState.galabucks >= cost;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(width: 12, child: Text(name)),
+        const SizedBox(width: 1),
+        SizedBox(width: 10, child: Text(effect)),
+        const SizedBox(width: 1),
+        GestureDetector(
+          onTap: canAfford ? onBuy : null,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            decoration: BoxDecoration(
+              color: canAfford
+                  ? const Color(0xFF004400)
+                  : const Color(0xFF440000),
+            ),
+            child: Text('BUY: $cost'),
+          ),
+        ),
+      ],
     );
   }
 }

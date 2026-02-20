@@ -11,7 +11,12 @@ import 'bomb_projectile.dart';
 class Player extends Entity {
   double? _targetX;
   double? _targetY;
-  double get speed => _speedBoostTicks > 0 ? perFrame(24.0) : perFrame(12.0);
+  double get speed {
+    final baseSpeed = 12.0 + (speedUpgradeLevel * 2.0);
+    return _speedBoostTicks > 0
+        ? perFrame(baseSpeed * 2.0)
+        : perFrame(baseSpeed);
+  }
   int _fireCooldown = 0;
   int get fireInterval => _rapidFireTicks > 0 ? toTicks(0.125) : toTicks(0.25);
 
@@ -20,12 +25,18 @@ class Player extends Entity {
   int _rapidFireTicks = 0;
   BombProjectile? _activeBomb;
 
+  int speedUpgradeLevel = 0;
+  int bulletStrengthUpgradeLevel = 0;
+  int armorUpgradeLevel = 0;
+
   Player({required super.x, required super.y})
     : super(
         health: 100,
         lines: ['<*>', '/ \\'],
         color: const Color(0xFF00FF00),
       );
+
+  int get maxHealth => 100 + (armorUpgradeLevel * 25);
 
   @override
   bool get isPlayer => true;
@@ -110,8 +121,9 @@ class Player extends Entity {
 
   void fire(GameState state) {
     if (_fireCooldown == 0) {
+      final damage = 10 + (bulletStrengthUpgradeLevel * 5);
       state.addEntity(
-        Projectile(x: x + 1.0, y: y - 1.0, dy: perFrame(-10.0), damage: 10),
+        Projectile(x: x + 1.0, y: y - 1.0, dy: perFrame(-10.0), damage: damage),
       );
       _fireCooldown = fireInterval;
     }
