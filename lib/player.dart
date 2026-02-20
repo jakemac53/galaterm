@@ -23,6 +23,7 @@ class Player extends Entity {
   int _shieldHealth = 0;
   int _speedBoostTicks = 0;
   int _rapidFireTicks = 0;
+  int _onFireTicks = 0;
   BombProjectile? _activeBomb;
 
   int speedUpgradeLevel = 0;
@@ -70,6 +71,14 @@ class Player extends Entity {
     if (_fireCooldown > 0) _fireCooldown--;
     if (_speedBoostTicks > 0) _speedBoostTicks--;
     if (_rapidFireTicks > 0) _rapidFireTicks--;
+
+    // Fire damage: 1 damage every 0.2s (12 ticks at 60fps) for 5s
+    if (_onFireTicks > 0) {
+      if (_onFireTicks % 12 == 0) {
+        attack(1);
+      }
+      _onFireTicks--;
+    }
 
     fire(state);
   }
@@ -140,6 +149,19 @@ class Player extends Entity {
       _activeBomb = BombProjectile(x: x + 1.0, y: y - 1.0);
       state.addEntity(_activeBomb!);
     }
+  }
+
+  void setOnFire() {
+    // 5 seconds of fire at 60fps = 300 ticks
+    _onFireTicks = toTicks(5.0);
+  }
+
+  @override
+  Color? get color {
+    if (_onFireTicks > 0 && _onFireTicks % 10 < 5) {
+      return const Color(0xFFFF4500); // Flashing orange red
+    }
+    return super.color;
   }
 }
 

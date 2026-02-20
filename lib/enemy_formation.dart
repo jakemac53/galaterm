@@ -44,14 +44,26 @@ class EnemyFormation extends Entity {
             ),
           );
         } else if (r == 1) {
-          enemies.add(
-            SaucerEnemy(
-              x: ex,
-              y: ey,
-              divingSpeed: divingSpeed,
-              returnSpeed: returnSpeed,
-            ),
-          );
+          if (ey >= 4 && _rand.nextDouble() < 0.2) {
+            // Only some are fire enemies
+            enemies.add(
+              FireEnemy(
+                x: ex,
+                y: ey,
+                divingSpeed: divingSpeed,
+                returnSpeed: returnSpeed,
+              ),
+            );
+          } else {
+            enemies.add(
+              SaucerEnemy(
+                x: ex,
+                y: ey,
+                divingSpeed: divingSpeed,
+                returnSpeed: returnSpeed,
+              ),
+            );
+          }
         } else {
           enemies.add(
             DroneEnemy(

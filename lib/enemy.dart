@@ -160,6 +160,56 @@ class DroneEnemy extends Enemy {
   }) : super(health: 20, lines: ['[=]'], color: const Color(0xFFFF0000));
 }
 
+class FireEnemy extends Enemy {
+  int _shotCooldown = 0;
+
+  FireEnemy({
+    required super.x,
+    required super.y,
+    super.divingSpeed,
+    super.returnSpeed,
+  }) : super(health: 40, lines: ['{^}'], color: const Color(0xFFFF4500));
+
+  @override
+  void move(GameState state) {
+    super.move(state);
+
+    if (!isReturning && _shotCooldown <= 0) {
+      state.addEntity(FlameProjectile(x: x + 1, y: y + 1, dy: perFrame(12.0)));
+      _shotCooldown = toTicks(1.5);
+    }
+    if (_shotCooldown > 0) _shotCooldown--;
+  }
+}
+
+class FlameProjectile extends Projectile {
+  FlameProjectile({required super.x, required super.y, required super.dy})
+    : super(isEnemyProjectile: true, damage: 5);
+
+  @override
+  Color? get color => const Color(0xFFFF4500);
+
+  @override
+  List<String> get lines => [gridY % 2 == 0 ? 'w' : 'v'];
+
+  @override
+  void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
+    // Custom collision to apply fire debuff
+    final targets = grid[gridX]?[gridY];
+    if (targets != null) {
+      for (final e in targets) {
+        if (e is Player) {
+          e.attack(damage);
+          e.setOnFire();
+          state.removeEntity(this);
+          return;
+        }
+      }
+    }
+    super.collide(state, grid);
+  }
+}
+
 class BossEnemy extends Enemy {
   int _shotCooldown = 0;
 
