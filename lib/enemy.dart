@@ -146,7 +146,12 @@ class CruiserEnemy extends Enemy {
     super.divingSpeed,
     super.returnSpeed,
     super.diesOffscreen,
-  }) : super(health: 40, lines: ['<V>'], color: const Color(0xFFFF00FF));
+    int healthMultiplier = 1,
+  }) : super(
+         health: 40 * healthMultiplier,
+         lines: ['<V>'],
+         color: const Color(0xFFFF00FF),
+       );
 }
 
 class SaucerEnemy extends Enemy {
@@ -156,7 +161,12 @@ class SaucerEnemy extends Enemy {
     super.divingSpeed,
     super.returnSpeed,
     super.diesOffscreen,
-  }) : super(health: 30, lines: ['(-)'], color: const Color(0xFF00FFFF));
+    int healthMultiplier = 1,
+  }) : super(
+         health: 30 * healthMultiplier,
+         lines: ['(-)'],
+         color: const Color(0xFF00FFFF),
+       );
 }
 
 class DroneEnemy extends Enemy {
@@ -166,7 +176,12 @@ class DroneEnemy extends Enemy {
     super.divingSpeed,
     super.returnSpeed,
     super.diesOffscreen,
-  }) : super(health: 20, lines: ['[=]'], color: const Color(0xFFFF0000));
+    int healthMultiplier = 1,
+  }) : super(
+         health: 20 * healthMultiplier,
+         lines: ['[=]'],
+         color: const Color(0xFFFF0000),
+       );
 }
 
 class FireEnemy extends Enemy {
@@ -178,7 +193,12 @@ class FireEnemy extends Enemy {
     super.divingSpeed,
     super.returnSpeed,
     super.diesOffscreen,
-  }) : super(health: 40, lines: ['{^}'], color: const Color(0xFFFF4500));
+    int healthMultiplier = 1,
+  }) : super(
+         health: 40 * healthMultiplier,
+         lines: ['{^}'],
+         color: const Color(0xFFFF4500),
+       );
 
   @override
   void move(GameState state) {
@@ -223,9 +243,9 @@ class FlameProjectile extends Projectile {
 class BossEnemy extends Enemy {
   int _shotCooldown = 0;
 
-  BossEnemy({required super.x, required super.y})
+  BossEnemy({required super.x, required super.y, int healthMultiplier = 1})
     : super(
-        health: 1500,
+        health: 1500 * healthMultiplier,
         lines: [
           r'   _____        _____   ',
           r'  /     \      /     \  ',
@@ -272,6 +292,8 @@ class BossEnemy extends Enemy {
             divingSpeed: 8.0,
             returnSpeed: 10.0,
             diesOffscreen: true,
+            healthMultiplier:
+                health ~/ 1500, // Roughly preserve the multiplier for adds
           );
         } else {
           spawnedEnemy = FireEnemy(
@@ -280,6 +302,7 @@ class BossEnemy extends Enemy {
             divingSpeed: 8.0,
             returnSpeed: 10.0,
             diesOffscreen: true,
+            healthMultiplier: health ~/ 1500,
           );
         }
         state.addEntity(spawnedEnemy..startDive());
@@ -293,14 +316,17 @@ class HydraBossEnemy extends Enemy {
   int _shotCooldown = 0;
   final int splitLevel;
 
+  final int healthMultiplier;
+
   HydraBossEnemy({
     required super.x,
     required super.y,
     this.splitLevel = 0,
     double vx = 4.0,
     double vy = 2.0,
+    this.healthMultiplier = 1,
   }) : super(
-         health: 1200 ~/ (pow(2, splitLevel)),
+         health: (1200 ~/ (pow(2, splitLevel))) * healthMultiplier,
          lines: _getLinesForLevel(splitLevel),
          color: const Color(0xFF00FF00),
        ) {
@@ -390,6 +416,7 @@ class HydraBossEnemy extends Enemy {
         splitLevel: splitLevel + 1,
         vx: -(_vx.abs() + 2.0),
         vy: -(_vy.abs() + 1.0),
+        healthMultiplier: healthMultiplier,
       ),
       HydraBossEnemy(
         x: x + width / 2,
@@ -397,6 +424,7 @@ class HydraBossEnemy extends Enemy {
         splitLevel: splitLevel + 1,
         vx: _vx.abs() + 2.0,
         vy: -(_vy.abs() + 1.0),
+        healthMultiplier: healthMultiplier,
       ),
     ];
   }

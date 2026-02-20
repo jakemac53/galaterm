@@ -35,15 +35,24 @@ class _GalatermAppState extends State<GalatermApp> {
     while (true) {
       if (level % 5 == 0) {
         if (level % 10 == 0) {
-          yield EnemyFormation.hydraBoss(x: 35, y: 5);
+          yield EnemyFormation.hydraBoss(
+            x: 35,
+            y: 5,
+            healthMultiplier: 1 + ((level - 1) ~/ 5),
+          );
         } else {
-          yield EnemyFormation.boss(x: 35, y: 5);
+          yield EnemyFormation.boss(
+            x: 35,
+            y: 5,
+            healthMultiplier: 1 + ((level - 1) ~/ 5),
+          );
         }
       } else {
         final speed = perFrame(2.0 + (level - 1) * 0.5);
         final fireRatePerSecond = 0.3 + (level - 1) * 0.2;
         final divingSpeed = 6.0 + (level - 1) * 2.0;
         final returnSpeed = 8.0 + (level - 1) * 1.5;
+        final healthMultiplier = 1 + ((level - 1) ~/ 5);
 
         final randInt = rand.nextInt(4);
         if (randInt == 0) {
@@ -52,6 +61,7 @@ class _GalatermAppState extends State<GalatermApp> {
             fireRatePerSecond: fireRatePerSecond,
             divingSpeed: divingSpeed,
             returnSpeed: returnSpeed,
+            healthMultiplier: healthMultiplier,
           );
         } else if (randInt == 1) {
           yield EnemyFormation.diamond(
@@ -59,6 +69,7 @@ class _GalatermAppState extends State<GalatermApp> {
             fireRatePerSecond: fireRatePerSecond,
             divingSpeed: divingSpeed,
             returnSpeed: returnSpeed,
+            healthMultiplier: healthMultiplier,
           );
         } else if (randInt == 2) {
           yield EnemyFormation.twinColumns(
@@ -66,6 +77,7 @@ class _GalatermAppState extends State<GalatermApp> {
             fireRatePerSecond: fireRatePerSecond,
             divingSpeed: divingSpeed,
             returnSpeed: returnSpeed,
+            healthMultiplier: healthMultiplier,
           );
         } else {
           yield EnemyFormation(
@@ -75,6 +87,7 @@ class _GalatermAppState extends State<GalatermApp> {
             fireRatePerSecond: fireRatePerSecond,
             divingSpeed: divingSpeed,
             returnSpeed: returnSpeed,
+            healthMultiplier: healthMultiplier,
           );
         }
       }

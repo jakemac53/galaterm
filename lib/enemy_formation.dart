@@ -27,6 +27,7 @@ class EnemyFormation extends Entity {
     this.fireRatePerSecond = 0.5,
     this.divingSpeed = 8.0,
     this.returnSpeed = 10.0,
+    int healthMultiplier = 1,
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
@@ -43,6 +44,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         } else if (r == 1) {
@@ -52,6 +54,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         } else {
@@ -61,6 +64,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         }
@@ -73,6 +77,7 @@ class EnemyFormation extends Entity {
     this.fireRatePerSecond = 0.5,
     this.divingSpeed = 8.0,
     this.returnSpeed = 10.0,
+    int healthMultiplier = 1,
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
@@ -98,6 +103,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         } else if (r == 1) {
@@ -107,6 +113,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         } else {
@@ -116,6 +123,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         }
@@ -128,6 +136,7 @@ class EnemyFormation extends Entity {
     this.fireRatePerSecond = 0.5,
     this.divingSpeed = 8.0,
     this.returnSpeed = 10.0,
+    int healthMultiplier = 1,
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
@@ -156,6 +165,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         } else if (c == 3 && r == 3) {
@@ -166,6 +176,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         } else {
@@ -175,6 +186,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         }
@@ -187,6 +199,7 @@ class EnemyFormation extends Entity {
     this.fireRatePerSecond = 0.5,
     this.divingSpeed = 8.0,
     this.returnSpeed = 10.0,
+    int healthMultiplier = 1,
   }) : speed = speed ?? perFrame(2.0),
        _dx = speed ?? perFrame(2.0),
        super(x: 0.0, y: 0.0, character: ' ') {
@@ -205,6 +218,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         } else if (r < 2) {
@@ -214,6 +228,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         } else {
@@ -223,6 +238,7 @@ class EnemyFormation extends Entity {
               y: ey,
               divingSpeed: divingSpeed,
               returnSpeed: returnSpeed,
+              healthMultiplier: healthMultiplier,
             ),
           );
         }
@@ -230,24 +246,32 @@ class EnemyFormation extends Entity {
     }
   }
 
-  EnemyFormation.boss({required double x, required double y})
+  EnemyFormation.boss({
+    required double x,
+    required double y,
+    int healthMultiplier = 1,
+  })
     : speed = 0,
       _dx = 0,
       fireRatePerSecond = 0,
       divingSpeed = 0,
       returnSpeed = 0,
       super(x: 0, y: 0, character: ' ') {
-    enemies.add(BossEnemy(x: x, y: y));
+    enemies.add(BossEnemy(x: x, y: y, healthMultiplier: healthMultiplier));
   }
 
-  EnemyFormation.hydraBoss({required double x, required double y})
+  EnemyFormation.hydraBoss({
+    required double x,
+    required double y,
+    int healthMultiplier = 1,
+  })
     : speed = 0,
       _dx = 0,
       fireRatePerSecond = 0,
       divingSpeed = 0,
       returnSpeed = 0,
       super(x: 0, y: 0, character: ' ') {
-    enemies.add(HydraBossEnemy(x: x, y: y));
+    enemies.add(HydraBossEnemy(x: x, y: y, healthMultiplier: healthMultiplier));
   }
 
   @override
