@@ -162,6 +162,7 @@ class DroneEnemy extends Enemy {
 
 class BossEnemy extends Enemy {
   int _shotCooldown = 0;
+  int _diveCooldown = 0;
 
   BossEnemy({required super.x, required super.y})
     : super(
@@ -203,11 +204,15 @@ class BossEnemy extends Enemy {
       }
       _shotCooldown = toTicks(0.8); // Slower fire rate
     }
-    if (_shotCooldown > 0) _shotCooldown--;
 
-    // Drastically reduced diving frequency for boss to show off movement pattern
-    if (!isDiving && !isReturning && _rand.nextDouble() < 0.001) {
-      startDive();
+    // Hard cooldown: at most one dive every 15 seconds
+    if (!isDiving && !isReturning && _diveCooldown <= 0) {
+      if (_rand.nextDouble() < 0.0005) {
+        startDive();
+        _diveCooldown = toTicks(15.0);
+      }
     }
+    if (_shotCooldown > 0) _shotCooldown--;
+    if (_diveCooldown > 0) _diveCooldown--;
   }
 }

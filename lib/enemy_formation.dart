@@ -169,7 +169,7 @@ class EnemyFormation extends Entity {
     // Occasional dive trigger (chance per tick)
     if (_rand.nextDouble() < 0.005) {
       final available = enemies
-          .where((e) => !e.isDiving && !e.isReturning)
+          .where((e) => !e.isDiving && !e.isReturning && e is! BossEnemy)
           .toList();
       if (available.isNotEmpty) {
         available[_rand.nextInt(available.length)].startDive();
