@@ -560,8 +560,8 @@ class _GalatermAppState extends State<GalatermApp> {
 
   void _skipToBoss() {
     setState(() {
-      // Find the next boss level (multiple of 5)
-      while ((_levelNumber) % 5 != 0) {
+      // Find the level right BEFORE the next boss level (multiple of 5 minus 1)
+      while ((_levelNumber + 1) % 5 != 0) {
         _levelNumber++;
         _levels.moveNext();
       }
