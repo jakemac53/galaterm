@@ -6,6 +6,7 @@ import 'game_state.dart';
 import 'projectile.dart';
 import 'constants.dart';
 import 'item.dart';
+import 'bomb_projectile.dart';
 
 class Player extends Entity {
   double? _targetX;
@@ -17,6 +18,7 @@ class Player extends Entity {
   int _shieldHealth = 0;
   int _speedBoostTicks = 0;
   int _rapidFireTicks = 0;
+  BombProjectile? _activeBomb;
 
   Player({required super.x, required super.y})
     : super(
@@ -116,16 +118,13 @@ class Player extends Entity {
   }
 
   void useBomb(GameState state) {
-    if (state.bombs > 0) {
+    if (_activeBomb != null && _activeBomb!.health > 0) {
+      _activeBomb!.explode();
+      _activeBomb = null;
+    } else if (state.bombs > 0) {
       state.bombs--;
-      // Deal massive damage to all enemies
-      for (final entity in state.entities) {
-        if (entity.isEnemy) {
-          for (final e in entity.activeEntities) {
-            e.attack(100);
-          }
-        }
-      }
+      _activeBomb = BombProjectile(x: x + 1.0, y: y - 1.0);
+      state.addEntity(_activeBomb!);
     }
   }
 }
