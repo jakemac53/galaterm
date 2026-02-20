@@ -81,11 +81,11 @@ class LaserBeam extends Entity {
   LaserBeam({required super.x, required super.y, required this.damagePerTick})
     : super(
         health: 1,
-        lines: List.generate((y).toInt(), (_) => '|'),
-        color: const Color(0xFF00FF00), // bright green
+        lines: List.generate((y).toInt(), (_) => ' '),
+        backgroundColor: const Color(0xFF008080), // Teal
       ) {
     // Make it start at the top of the scren and end at the player position
-    this.y = 0;
+    y = 0;
   }
 
   @override
@@ -104,7 +104,7 @@ class LaserBeam extends Entity {
       final targets = grid[gridX]?[gridY + pdy];
       if (targets != null) {
         for (final e in targets.toList()) {
-          if (e.isEnemy && e.health > 0) {
+          if (e.isEnemy && e is! Projectile && e.health > 0) {
             e.attack(damagePerTick);
             // Let it pierce!
           }
@@ -132,18 +132,28 @@ class HomingMissile extends Projectile {
 
   @override
   void move(GameState state) {
-    if (_target == null ||
-        _target!.health <= 0 ||
-        !state.entities.contains(_target)) {
+    bool targetExists = false;
+    if (_target != null && _target!.health > 0) {
+      for (final group in state.entities) {
+        if (group.activeEntities.contains(_target)) {
+          targetExists = true;
+          break;
+        }
+      }
+    }
+
+    if (!targetExists) {
       // Find nearest enemy
       double nearestDist = double.infinity;
       _target = null;
-      for (final e in state.entities) {
-        if (e.isEnemy && e.health > 0) {
-          final dist = sqrt(pow(e.x - x, 2) + pow(e.y - y, 2));
-          if (dist < nearestDist) {
-            nearestDist = dist;
-            _target = e;
+      for (final group in state.entities) {
+        for (final e in group.activeEntities) {
+          if (e.isEnemy && e is! Projectile && e.health > 0) {
+            final dist = sqrt(pow(e.x - x, 2) + pow(e.y - y, 2));
+            if (dist < nearestDist) {
+              nearestDist = dist;
+              _target = e;
+            }
           }
         }
       }
