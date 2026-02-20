@@ -202,10 +202,6 @@ class _GalatermAppState extends State<GalatermApp> {
             return false;
           }
 
-          if (event.logicalKey == LogicalKey.space || event.character == ' ') {
-            _player.fire(_gameState);
-            return true;
-          }
           if (event.character?.toLowerCase() == 'b') {
             _player.useBomb(_gameState);
             return true;
@@ -445,11 +441,22 @@ class _GalatermAppState extends State<GalatermApp> {
                         'FPS: ${_fps.toStringAsFixed(1)} | Frame: ${_avgFrameTime.toStringAsFixed(2)}ms',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(width: 2),
+                      GestureDetector(
+                        onTap: _skipToBoss,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 1),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF440044),
+                          ),
+                          child: const Text('[ DEBUG: BOSS ]'),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 1),
                   const Text(
-                    'Use mouse to move. SPACE: fire. B: bomb. P: pause. Q: quit.',
+                    'Use mouse to move. B: bomb. P: pause. Q: quit.',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -514,5 +521,18 @@ class _GalatermAppState extends State<GalatermApp> {
         ),
       ],
     );
+  }
+
+  void _skipToBoss() {
+    setState(() {
+      // Find the next boss level (multiple of 5)
+      while ((_levelNumber + 1) % 5 != 0) {
+        _levelNumber++;
+        _levels.moveNext();
+      }
+      _nextLevel();
+      // Also give some cash for testing
+      _gameState.galabucks += 5000;
+    });
   }
 }

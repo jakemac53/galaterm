@@ -70,6 +70,8 @@ class Player extends Entity {
     if (_fireCooldown > 0) _fireCooldown--;
     if (_speedBoostTicks > 0) _speedBoostTicks--;
     if (_rapidFireTicks > 0) _rapidFireTicks--;
+
+    fire(state);
   }
 
   @override
