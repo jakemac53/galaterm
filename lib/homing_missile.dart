@@ -17,7 +17,7 @@ class HomingMissile extends Projectile {
     required super.damage,
   }) : super(
          dx: 0,
-         dy: perFrame(-8.0 - speedLevel * 2),
+         dy: perFrame(-20.0 - speedLevel * 4),
          color: const Color(0xFFFF69B4), // Hot pink
          character: '^',
        );
@@ -58,7 +58,7 @@ class HomingMissile extends Projectile {
       final dist = sqrt(pow(dxTarget, 2) + pow(dyTarget, 2));
 
       if (dist > 0) {
-        final speed = perFrame(8.0 + speedLevel * 2);
+        final speed = perFrame(20.0 + speedLevel * 4);
         // Slowly adjust current dx and dy
         final ndx = dxTarget / dist * speed;
         final ndy = dyTarget / dist * speed;

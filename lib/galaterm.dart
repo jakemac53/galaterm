@@ -201,7 +201,7 @@ class _GalatermAppState extends State<GalatermApp> {
             for (int dx = 0; dx < active.width; dx++) {
               if (active.lines[dy].length > dx) {
                 final char = active.lines[dy][dx];
-                if (char != ' ') {
+                if (char != ' ' || active.backgroundColor != null) {
                   final key = '${active.gridX + dx},${active.gridY + dy}';
                   charMap[key] = char;
                   colorMap[key] = active.color;
