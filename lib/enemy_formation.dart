@@ -67,6 +67,148 @@ class EnemyFormation extends Entity {
     }
   }
 
+  EnemyFormation.vShape({
+    double? speed,
+    this.fireRatePerSecond = 0.5,
+    this.divingSpeed = 8.0,
+    this.returnSpeed = 10.0,
+  }) : speed = speed ?? perFrame(2.0),
+       _dx = speed ?? perFrame(2.0),
+       super(x: 0.0, y: 0.0, character: ' ') {
+    for (int r = 0; r < 5; r++) {
+      final cols = r == 4 ? [4] : [r, 8 - r];
+      for (final c in cols) {
+        final double ex = (20 + c * 5).toDouble();
+        final double ey = (2 + r * 2).toDouble();
+        if (r < 2) {
+          enemies.add(
+            CruiserEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        } else if (r < 4) {
+          enemies.add(
+            SaucerEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        } else {
+          enemies.add(
+            DroneEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  EnemyFormation.diamond({
+    double? speed,
+    this.fireRatePerSecond = 0.5,
+    this.divingSpeed = 8.0,
+    this.returnSpeed = 10.0,
+  }) : speed = speed ?? perFrame(2.0),
+       _dx = speed ?? perFrame(2.0),
+       super(x: 0.0, y: 0.0, character: ' ') {
+    final pattern = [
+      [4], // Row 0
+      [3, 5], // Row 1
+      [2, 6], // Row 2
+      [1, 7], // Row 3 (center)
+      [2, 6], // Row 4
+      [3, 5], // Row 5
+      [4], // Row 6
+    ];
+    for (int r = 0; r < pattern.length; r++) {
+      for (final c in pattern[r]) {
+        final double ex = (20 + c * 5).toDouble();
+        final double ey = (2 + r * 2).toDouble();
+        if (r == 0 || r == 6) {
+          enemies.add(
+            CruiserEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        } else if (r == 1 || r == 5) {
+          enemies.add(
+            SaucerEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        } else {
+          enemies.add(
+            DroneEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  EnemyFormation.twinColumns({
+    double? speed,
+    this.fireRatePerSecond = 0.5,
+    this.divingSpeed = 8.0,
+    this.returnSpeed = 10.0,
+  }) : speed = speed ?? perFrame(2.0),
+       _dx = speed ?? perFrame(2.0),
+       super(x: 0.0, y: 0.0, character: ' ') {
+    for (int r = 0; r < 4; r++) {
+      for (final c in [0, 1, 7, 8]) {
+        final double ex = (15 + c * 5).toDouble();
+        final double ey = (2 + r * 2).toDouble();
+        if (r == 0) {
+          enemies.add(
+            CruiserEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        } else if (r == 1) {
+          enemies.add(
+            SaucerEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        } else {
+          enemies.add(
+            DroneEnemy(
+              x: ex,
+              y: ey,
+              divingSpeed: divingSpeed,
+              returnSpeed: returnSpeed,
+            ),
+          );
+        }
+      }
+    }
+  }
+
   EnemyFormation.boss({required double x, required double y})
     : speed = 0,
       _dx = 0,

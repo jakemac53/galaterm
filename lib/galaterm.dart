@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:nocterm/nocterm.dart';
 
 import 'enemy_formation.dart';
@@ -30,18 +31,48 @@ class _GalatermAppState extends State<GalatermApp> {
 
   Iterable<EnemyFormation> _generateLevels() sync* {
     int level = 1;
+    final rand = Random();
     while (true) {
       if (level % 5 == 0) {
         yield EnemyFormation.boss(x: 35, y: 5);
       } else {
-        yield EnemyFormation(
-          rows: 3,
-          cols: 8,
-          speed: perFrame(2.0 + (level - 1) * 0.5),
-          fireRatePerSecond: 0.3 + (level - 1) * 0.2,
-          divingSpeed: 6.0 + (level - 1) * 2.0,
-          returnSpeed: 8.0 + (level - 1) * 1.5,
-        );
+        final speed = perFrame(2.0 + (level - 1) * 0.5);
+        final fireRatePerSecond = 0.3 + (level - 1) * 0.2;
+        final divingSpeed = 6.0 + (level - 1) * 2.0;
+        final returnSpeed = 8.0 + (level - 1) * 1.5;
+
+        final randInt = rand.nextInt(4);
+        if (randInt == 0) {
+          yield EnemyFormation.vShape(
+            speed: speed,
+            fireRatePerSecond: fireRatePerSecond,
+            divingSpeed: divingSpeed,
+            returnSpeed: returnSpeed,
+          );
+        } else if (randInt == 1) {
+          yield EnemyFormation.diamond(
+            speed: speed,
+            fireRatePerSecond: fireRatePerSecond,
+            divingSpeed: divingSpeed,
+            returnSpeed: returnSpeed,
+          );
+        } else if (randInt == 2) {
+          yield EnemyFormation.twinColumns(
+            speed: speed,
+            fireRatePerSecond: fireRatePerSecond,
+            divingSpeed: divingSpeed,
+            returnSpeed: returnSpeed,
+          );
+        } else {
+          yield EnemyFormation(
+            rows: 3,
+            cols: 8,
+            speed: speed,
+            fireRatePerSecond: fireRatePerSecond,
+            divingSpeed: divingSpeed,
+            returnSpeed: returnSpeed,
+          );
+        }
       }
       level++;
     }
