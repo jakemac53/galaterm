@@ -18,12 +18,31 @@ class HomingMissile extends Projectile {
   }) : super(
          dx: 0,
          dy: perFrame(-20.0 - speedLevel * 4),
-         color: const Color(0xFFFF69B4), // Hot pink
-         character: '^',
+         lines: ['^', 'T', 'T', 'T'],
+         colors: [
+           const Color(0xFF4682B4), // Steely blue
+           const Color(0xFFFFFF00), // Yellow
+           const Color(0xFFFFA500), // Orange
+           const Color(0xFFFF0000), // Red
+         ],
        );
+
+  int _tick = 0;
 
   @override
   void move(GameState state) {
+    _tick++;
+    if (_tick % 3 == 0 && colors != null && colors!.length >= 4) {
+      final trailColors = [
+        const Color(0xFFFFFF00),
+        const Color(0xFFFFA500),
+        const Color(0xFFFF0000),
+      ];
+      colors![1] = trailColors[(_tick ~/ 3) % 3];
+      colors![2] = trailColors[((_tick ~/ 3) + 1) % 3];
+      colors![3] = trailColors[((_tick ~/ 3) + 2) % 3];
+    }
+
     bool targetExists = false;
     if (_target != null && _target!.health > 0) {
       for (final group in state.entities) {

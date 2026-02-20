@@ -7,6 +7,7 @@ abstract class Entity {
   int health;
   List<String> lines;
   Color? color;
+  List<Color>? colors; // new per-line color list
   Color? backgroundColor;
 
   Entity({
@@ -16,6 +17,7 @@ abstract class Entity {
     String? character,
     List<String>? lines,
     this.color,
+    this.colors,
     this.backgroundColor,
   }) : lines = lines ?? [character ?? ' '];
 

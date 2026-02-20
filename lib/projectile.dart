@@ -17,15 +17,21 @@ class Projectile extends Entity {
     this.isEnemyProjectile = false,
     this.damage = 1,
     String? character,
+    List<String>? lines,
     Color? color,
+    List<Color>? colors,
   }) : super(
          health: 1,
-         character: character ?? (isEnemyProjectile ? 'v' : '|'),
+         character: lines == null
+             ? (character ?? (isEnemyProjectile ? 'v' : '|'))
+             : null,
+         lines: lines,
          color:
              color ??
              (isEnemyProjectile
              ? const Color(0xFFFFA500)
                  : const Color(0xFF00E5FF)),
+         colors: colors,
        );
 
   @override
