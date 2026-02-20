@@ -16,6 +16,7 @@ class Enemy extends Entity {
     super.color,
     this.divingSpeed = 8.0,
     this.returnSpeed = 10.0,
+    this.diesOffscreen = false,
   }) {
     formationX = x;
     formationY = y;
@@ -34,6 +35,7 @@ class Enemy extends Entity {
 
   final double divingSpeed;
   final double returnSpeed;
+  final bool diesOffscreen;
 
   @override
   bool get isEnemy => true;
@@ -81,6 +83,10 @@ class Enemy extends Entity {
 
       // If off bottom, wrap to top and start returning
       if (y > state.height) {
+        if (diesOffscreen) {
+          state.removeEntity(this);
+          return;
+        }
         y = -height.toDouble();
         isDiving = false;
         isReturning = true;
@@ -139,6 +145,7 @@ class CruiserEnemy extends Enemy {
     required super.y,
     super.divingSpeed,
     super.returnSpeed,
+    super.diesOffscreen,
   }) : super(health: 40, lines: ['<V>'], color: const Color(0xFFFF00FF));
 }
 
@@ -148,6 +155,7 @@ class SaucerEnemy extends Enemy {
     required super.y,
     super.divingSpeed,
     super.returnSpeed,
+    super.diesOffscreen,
   }) : super(health: 30, lines: ['(-)'], color: const Color(0xFF00FFFF));
 }
 
@@ -157,6 +165,7 @@ class DroneEnemy extends Enemy {
     required super.y,
     super.divingSpeed,
     super.returnSpeed,
+    super.diesOffscreen,
   }) : super(health: 20, lines: ['[=]'], color: const Color(0xFFFF0000));
 }
 
@@ -168,6 +177,7 @@ class FireEnemy extends Enemy {
     required super.y,
     super.divingSpeed,
     super.returnSpeed,
+    super.diesOffscreen,
   }) : super(health: 40, lines: ['{^}'], color: const Color(0xFFFF4500));
 
   @override
@@ -248,6 +258,32 @@ class BossEnemy extends Enemy {
         );
       }
       _shotCooldown = toTicks(0.8); // Slower fire rate
+      
+      // Also occasionally spawn an enemy from a pool
+      if (_rand.nextDouble() < 0.2) {
+        final spawnX = x + 12;
+        final spawnY = y + 6;
+
+        Enemy spawnedEnemy;
+        if (_rand.nextBool()) {
+          spawnedEnemy = DroneEnemy(
+            x: spawnX,
+            y: spawnY,
+            divingSpeed: 8.0,
+            returnSpeed: 10.0,
+            diesOffscreen: true,
+          );
+        } else {
+          spawnedEnemy = FireEnemy(
+            x: spawnX,
+            y: spawnY,
+            divingSpeed: 8.0,
+            returnSpeed: 10.0,
+            diesOffscreen: true,
+          );
+        }
+        state.addEntity(spawnedEnemy..startDive());
+      }
     }
     if (_shotCooldown > 0) _shotCooldown--;
   }
