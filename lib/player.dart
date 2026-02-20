@@ -7,6 +7,8 @@ import 'projectile.dart';
 import 'constants.dart';
 import 'item.dart';
 import 'bomb_projectile.dart';
+import 'homing_missile.dart';
+import 'laser_beam.dart';
 
 class Player extends Entity {
   double? _targetX;
