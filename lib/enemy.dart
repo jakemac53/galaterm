@@ -165,9 +165,16 @@ class BossEnemy extends Enemy {
 
   BossEnemy({required super.x, required super.y})
     : super(
-        health: 1000,
-        lines: [r'  /MMMMM\  ', r' <|XXXXX|> ', r'  \WWWWW/  ', r'   v   v   '],
-        color: const Color(0xFFFF0000),
+        health: 2500,
+        lines: [
+          r'   _____        _____   ',
+          r'  /     \      /     \  ',
+          r' <|XXXXX|======|XXXXX|> ',
+          r'  \MMMMM/  ||  \MMMMM/  ',
+          r'   |___|  /MM\  |___|   ',
+          r'   v   v  \WW/  v   v   ',
+        ],
+        color: const Color(0xFFFF3333),
       );
 
   @override
@@ -175,36 +182,31 @@ class BossEnemy extends Enemy {
     if (isDiving || isReturning) {
       super.move(state);
     } else {
-      // Boss hovers back and forth at the top
-      x = 35.0 + 15.0 * sin(state.ticks / 60.0);
+      // Boss hovers in a wide sweeping pattern
+      x = 28.0 + 22.0 * sin(state.ticks / 40.0);
+      y = 5.0 + 3.0 * cos(state.ticks / 25.0);
     }
 
-    // Boss fires constantly if not returning
+    // Boss fires 4 projectiles constantly if not returning
     if (!isReturning && _shotCooldown <= 0) {
-      state.addEntity(
-        Projectile(
-          x: x + 2,
-          y: y + 4,
-          dy: perFrame(15.0),
-          isEnemyProjectile: true,
-          damage: 15,
-        ),
-      );
-      state.addEntity(
-        Projectile(
-          x: x + 8,
-          y: y + 4,
-          dy: perFrame(15.0),
-          isEnemyProjectile: true,
-          damage: 15,
-        ),
-      );
-      _shotCooldown = toTicks(0.5);
+      final cannons = [2, 8, 16, 22]; // Approximate X offsets for guns
+      for (final offset in cannons) {
+        state.addEntity(
+          Projectile(
+            x: x + offset,
+            y: y + 5,
+            dy: perFrame(18.0),
+            isEnemyProjectile: true,
+            damage: 20,
+          ),
+        );
+      }
+      _shotCooldown = toTicks(0.4); // Faster fire rate
     }
     if (_shotCooldown > 0) _shotCooldown--;
 
     // High frequency diving for boss
-    if (!isDiving && !isReturning && _rand.nextDouble() < 0.01) {
+    if (!isDiving && !isReturning && _rand.nextDouble() < 0.012) {
       startDive();
     }
   }

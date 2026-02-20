@@ -85,12 +85,12 @@ class EnemyFormation extends Entity {
     final dying = enemies.where((e) => e.health <= 0).toList();
     for (final enemy in dying) {
       if (enemy is BossEnemy) {
-        // Boss Jackpot! 10 money items
-        for (int i = 0; i < 10; i++) {
+        // Boss Jackpot! 15 money items spread across its large hull
+        for (int i = 0; i < 15; i++) {
           state.addEntity(
             Item(
-              x: enemy.x + _rand.nextInt(10),
-              y: enemy.y + _rand.nextInt(4),
+              x: enemy.x + _rand.nextInt(24),
+              y: enemy.y + _rand.nextInt(6),
               type: ItemType.money,
             ),
           );
