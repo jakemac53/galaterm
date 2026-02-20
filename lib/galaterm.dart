@@ -20,6 +20,7 @@ class _GalatermAppState extends State<GalatermApp> {
   final List<double> _frameTimes = [];
   double _fps = 0;
   double _avgFrameTime = 0;
+  bool _paused = false;
 
   final int _width = 80;
   final int _height = 40;
@@ -112,7 +113,7 @@ class _GalatermAppState extends State<GalatermApp> {
       if (!mounted) break;
 
       setState(() {
-        if (!_gameState.isGameOver && !_gameState.isLevelComplete) {
+        if (!_gameState.isGameOver && !_gameState.isLevelComplete && !_paused) {
           _gameState.tick();
         }
       });
@@ -179,11 +180,23 @@ class _GalatermAppState extends State<GalatermApp> {
       child: Focusable(
         focused: true,
         onKeyEvent: (event) {
-          if (event.character?.toLowerCase() == 'q') {
+          final key = event.character?.toLowerCase();
+          if (key == 'q') {
             shutdownApp();
             return true;
           }
-          if (_gameState.isGameOver || _gameState.isLevelComplete) return false;
+          if (key == 'p' &&
+              !_gameState.isGameOver &&
+              !_gameState.isLevelComplete) {
+            setState(() {
+              _paused = !_paused;
+            });
+            return true;
+          }
+
+          if (_gameState.isGameOver || _gameState.isLevelComplete || _paused) {
+            return false;
+          }
 
           if (event.logicalKey == LogicalKey.space || event.character == ' ') {
             _player.fire(_gameState);
@@ -323,6 +336,54 @@ class _GalatermAppState extends State<GalatermApp> {
                         ),
                       ),
                     )
+                  else if (_paused)
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          border: BoxBorder.all(style: BoxBorderStyle.double),
+                          color: const Color(0xFF222222),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'P A U S E D',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF00E5FF),
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            const Text('Press "p" to Resume'),
+                            const SizedBox(height: 2),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _paused = false;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 2,
+                                  vertical: 1,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: BoxBorder.all(
+                                    style: BoxBorderStyle.rounded,
+                                  ),
+                                  color: const Color(0xFF333333),
+                                ),
+                                child: const Text(' RESUME '),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                   else
                     ...List.generate(_height, (y) {
                       return Row(
@@ -384,7 +445,7 @@ class _GalatermAppState extends State<GalatermApp> {
                   ),
                   const SizedBox(height: 1),
                   const Text(
-                    'Use mouse to move. Press SPACE to fire. Press "b" for bomb. Press "q" to quit.',
+                    'Use mouse to move. SPACE: fire. B: bomb. P: pause. Q: quit.',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
