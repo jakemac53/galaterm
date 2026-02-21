@@ -348,27 +348,27 @@ class _GalatermAppState extends State<GalatermApp> {
                             const SizedBox(height: 1),
                             _buildUpgradeRow(
                               'Engines',
-                              'Speed +2',
+                              'Spd: ${12 + _player.speedUpgradeLevel * 2} -> ${14 + _player.speedUpgradeLevel * 2}',
                               100 + (_player.speedUpgradeLevel * 50),
                               () => _buyUpgrade('speed'),
                             ),
                             _buildUpgradeRow(
                               'Cannons',
-                              'Dmg +5',
+                              'Dmg: ${10 + _player.bulletStrengthUpgradeLevel * 5} -> ${15 + _player.bulletStrengthUpgradeLevel * 5}',
                               100 + (_player.bulletStrengthUpgradeLevel * 50),
                               () => _buyUpgrade('bullet'),
                             ),
                             _buildUpgradeRow(
                               'Armor',
-                              'HP +25',
+                              'HP: ${100 + _player.armorUpgradeLevel * 25} -> ${125 + _player.armorUpgradeLevel * 25}',
                               100 + (_player.armorUpgradeLevel * 50),
                               () => _buyUpgrade('armor'),
                             ),
                             _buildUpgradeRow(
                               'Missiles',
                               _player.homingMissileLevel == 0
-                                  ? 'Buy'
-                                  : 'Lvl Up',
+                                  ? 'Dmg: 0 -> 20'
+                                  : 'Dmg: ${15 + _player.homingMissileLevel * 5} -> ${20 + _player.homingMissileLevel * 5}',
                               _player.homingMissileLevel == 0
                                   ? 1000
                                   : 100 + (_player.homingMissileLevel * 50),
@@ -376,7 +376,9 @@ class _GalatermAppState extends State<GalatermApp> {
                             ),
                             _buildUpgradeRow(
                               'Laser',
-                              _player.laserBeamLevel == 0 ? 'Buy' : 'Lvl Up',
+                              _player.laserBeamLevel == 0
+                                  ? 'Dmg: 0 -> 4'
+                                  : 'Dmg: ${2 + _player.laserBeamLevel * 2} -> ${4 + _player.laserBeamLevel * 2}',
                               _player.laserBeamLevel == 0
                                   ? 2500
                                   : 100 + (_player.laserBeamLevel * 50),
@@ -590,7 +592,7 @@ class _GalatermAppState extends State<GalatermApp> {
       children: [
         SizedBox(width: 12, child: Text(name)),
         const SizedBox(width: 1),
-        SizedBox(width: 10, child: Text(effect)),
+        SizedBox(width: 20, child: Text(effect)),
         const SizedBox(width: 1),
         GestureDetector(
           onTap: canAfford ? onBuy : null,
