@@ -6,7 +6,7 @@ import 'game_state.dart';
 import 'constants.dart';
 
 class OmegaLaser extends Entity {
-  int _ticksRemaining = toTicks(1.0); // lasts for 1 second
+  int _ticksRemaining = toTicks(3.0); // lasts for 3 seconds
 
   OmegaLaser({required super.x, required super.y})
     : super(
@@ -47,26 +47,12 @@ class OmegaLaser extends Entity {
 
   @override
   void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
-    // Damage everything that is within the laser's bounds
-    // We already know it basically kills everything
-    for (int pdy = 0; pdy < height; pdy++) {
-        final targets = grid[gridX]?[gridY + pdy];
-        if (targets != null) {
-             for (final e in targets.toList()) {
-                 if (e.isEnemy && e.health > 0) {
-                     e.attack(9999); 
-                 }
-             }
-        }
-        
-    }
-    // Also since our hit box logic for this hacky V shape object might be slightly off with the bounding box, 
-    // let's just do a blanket sweeping collision on anything that overlaps its height
-    for (final e in state.entities) {
+    // Dialed back damage so we can actually see it instead of instantly completing the level!
+    for (final e in state.entities.toList()) {
         if (e == this) continue;
         for (final active in e.activeEntities) {
             if (active.isEnemy && active.health > 0) {
-                 active.attack(9999);
+          active.attack(5);
             }
         }
     }
