@@ -28,6 +28,7 @@ class _GalatermAppState extends State<GalatermApp> {
 
   int _levelNumber = 1;
   late Iterator<EnemyFormation> _levels;
+  final List<String> _levelUpgrades = [];
 
   Iterable<EnemyFormation> _generateLevels() sync* {
     int level = 1;
@@ -114,6 +115,7 @@ class _GalatermAppState extends State<GalatermApp> {
     setState(() {
       _levelNumber++;
       _levels.moveNext();
+      _levelUpgrades.clear();
       // Keep player but clear other entities? No, GameState needs careful reset.
       // Easiest is to keep the current GameState score and player health but reset entities.
       final oldScore = _gameState.score;
@@ -144,6 +146,7 @@ class _GalatermAppState extends State<GalatermApp> {
       _levelNumber = 1;
       _levels = _generateLevels().iterator;
       _levels.moveNext();
+      _levelUpgrades.clear();
       _gameState = GameState(width: _width, height: _height);
       _player = Player(
         x: (_width ~/ 2).toDouble(),
@@ -341,9 +344,29 @@ class _GalatermAppState extends State<GalatermApp> {
                             const SizedBox(height: 1),
                             Text('Galabucks: ${_gameState.galabucks}'),
                             const SizedBox(height: 2),
-                            const Text(
-                              '--- U P G R A D E S ---',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  '--- U P G R A D E S ---',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                if (_levelUpgrades.isNotEmpty) ...[
+                                  const SizedBox(width: 2),
+                                  GestureDetector(
+                                    onTap: _undoUpgrade,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 1,
+                                      ),
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF555500),
+                                      ),
+                                      child: const Text(' [UNDO] '),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                             const SizedBox(height: 1),
                             _buildUpgradeRow(
@@ -546,12 +569,14 @@ class _GalatermAppState extends State<GalatermApp> {
         if (_gameState.galabucks >= cost) {
           _gameState.galabucks -= cost;
           _player.speedUpgradeLevel++;
+          _levelUpgrades.add(type);
         }
       } else if (type == 'bullet') {
         int cost = 100 + (_player.bulletStrengthUpgradeLevel * 50);
         if (_gameState.galabucks >= cost) {
           _gameState.galabucks -= cost;
           _player.bulletStrengthUpgradeLevel++;
+          _levelUpgrades.add(type);
         }
       } else if (type == 'armor') {
         int cost = 100 + (_player.armorUpgradeLevel * 50);
@@ -559,6 +584,7 @@ class _GalatermAppState extends State<GalatermApp> {
           _gameState.galabucks -= cost;
           _player.armorUpgradeLevel++;
           _player.health = _player.maxHealth;
+          _levelUpgrades.add(type);
         }
       } else if (type == 'missile') {
         int cost = _player.homingMissileLevel == 0
@@ -567,6 +593,7 @@ class _GalatermAppState extends State<GalatermApp> {
         if (_gameState.galabucks >= cost) {
           _gameState.galabucks -= cost;
           _player.homingMissileLevel++;
+          _levelUpgrades.add(type);
         }
       } else if (type == 'laser') {
         int cost = _player.laserBeamLevel == 0
@@ -575,7 +602,38 @@ class _GalatermAppState extends State<GalatermApp> {
         if (_gameState.galabucks >= cost) {
           _gameState.galabucks -= cost;
           _player.laserBeamLevel++;
+          _levelUpgrades.add(type);
         }
+      }
+    });
+  }
+
+  void _undoUpgrade() {
+    setState(() {
+      if (_levelUpgrades.isEmpty) return;
+      final type = _levelUpgrades.removeLast();
+      if (type == 'speed') {
+        _player.speedUpgradeLevel--;
+        _gameState.galabucks += 100 + (_player.speedUpgradeLevel * 50);
+      } else if (type == 'bullet') {
+        _player.bulletStrengthUpgradeLevel--;
+        _gameState.galabucks += 100 + (_player.bulletStrengthUpgradeLevel * 50);
+      } else if (type == 'armor') {
+        _player.armorUpgradeLevel--;
+        _gameState.galabucks += 100 + (_player.armorUpgradeLevel * 50);
+        if (_player.health > _player.maxHealth) {
+          _player.health = _player.maxHealth;
+        }
+      } else if (type == 'missile') {
+        _player.homingMissileLevel--;
+        _gameState.galabucks += _player.homingMissileLevel == 0
+            ? 1000
+            : 100 + (_player.homingMissileLevel * 50);
+      } else if (type == 'laser') {
+        _player.laserBeamLevel--;
+        _gameState.galabucks += _player.laserBeamLevel == 0
+            ? 2500
+            : 100 + (_player.laserBeamLevel * 50);
       }
     });
   }
