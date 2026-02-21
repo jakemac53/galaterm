@@ -31,13 +31,16 @@ class GameState {
   }
 
   bool get isLevelComplete {
+    bool hasEnemies = false;
+    bool hasItems = false;
     for (final entity in _entities) {
       for (final active in entity.activeEntities) {
-        if (active.isEnemy && active.health > 0) return false;
-        if (active is Item && active.health > 0) return false;
+        if (active.isEnemy) hasEnemies = true;
+        if (active is Item) hasItems = true;
       }
     }
-    return true;
+    // Only complete if ALL enemies are dead AND ALL items are gone (collected or fell offscreen)
+    return !hasEnemies && !hasItems;
   }
 
   void addEntity(Entity entity) {
