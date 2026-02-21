@@ -59,7 +59,7 @@ class Item extends Entity {
 
   @override
   void move(GameState state) {
-    y += perFrame(2.5);
+    y += perFrame(5.0);
     if (y >= state.height) {
       state.removeEntity(this);
     }
