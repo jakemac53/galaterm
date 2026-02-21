@@ -12,28 +12,24 @@ class OmegaLaser extends Entity {
     : super(
         health: 1,
         lines: List.generate((y).toInt(), (dy) {
-           // We are generating a V shape originating from x,y spreading outward as we go UP (lower dy)
-           final yDiff = (y - dy).toDouble(); 
-           // Make it spread horizontally by 1 for every 1 dy
+          final yDiff = (y - dy).toDouble(); 
            final int halfWidth = yDiff.round();
            final int leftX = (x.round() - halfWidth);
            
-           if (leftX < 0) {
-               // Too far left, cut off
-               final width = (halfWidth * 2).clamp(1, 9999);
+          final int innerSpaces = halfWidth * 2;
+          final String fullRow = "\\${' ' * innerSpaces}/";
+           
+          if (leftX < 0) {
                final startIdx = -leftX;
-               if (startIdx >= width) return ''; // Completely offscreen left (unlikely)
-               final int visibleWidth = width - startIdx;
-               return ' ' * 0 + '\\/' * (visibleWidth ~/ 2);
+            if (startIdx >= fullRow.length) return '';
+            return fullRow.substring(startIdx);
            }
-           final widthStr = '\\/' * halfWidth; 
-           return (' ' * leftX) + widthStr;
+          return (' ' * leftX) + fullRow;
         }),
         color: const Color(0xFFFF00FF), // Magenta
         zIndex: 60,
       ) {
-    // Start at top of screen
-    x = 0; // x doesn't really matter for drawing since it handles its own left spacing
+    x = 0; 
     y = 0;
   }
 
@@ -48,14 +44,19 @@ class OmegaLaser extends Entity {
 
   @override
   void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {
-    // Dialed back damage so we can actually see it instead of instantly completing the level!
-    for (final e in state.entities.toList()) {
-        if (e == this) continue;
-        for (final active in e.activeEntities) {
-            if (active.isEnemy && active.health > 0) {
-          active.attack(5);
+    for (int dy = 0; dy < height; dy++) {
+      for (int dx = 0; dx < width; dx++) {
+        if (lines[dy].length > dx && lines[dy][dx] != ' ') {
+          final targets = grid[gridX + dx]?[gridY + dy];
+          if (targets != null) {
+            for (final e in targets.toList()) {
+              if (e.isEnemy && e.health > 0) {
+                e.attack(5);
+              }
             }
+          }
         }
+      }
     }
   }
 }

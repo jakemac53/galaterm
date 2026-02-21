@@ -272,7 +272,16 @@ class _GalatermAppState extends State<GalatermApp> {
             return true;
           }
 
-          if (_gameState.isGameOver || _gameState.isLevelComplete || _paused) {
+          if (_gameState.isLevelComplete) {
+            if (key == 'm') {
+              setState(() {
+                _gameState.galabucks += 1000;
+              });
+              return true;
+            }
+            return false;
+          }
+          if (_gameState.isGameOver || _paused) {
             return false;
           }
 
