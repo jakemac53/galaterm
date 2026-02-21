@@ -479,7 +479,44 @@ class _GalatermAppState extends State<GalatermApp> {
                       ),
                     )
                   else
-                    ...List.generate(_height, (y) {
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Vertical Health Bar
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(_height, (y) {
+                            // Calculate filled segments from bottom to top
+                            final double fillRatio =
+                                _player.health / _player.maxHealth;
+                            final int filledLines = (_height * fillRatio)
+                                .ceil();
+                            final bool isFilled =
+                                (_height - 1 - y) < filledLines;
+
+                            final color =
+                                _player.health > (_player.maxHealth * 0.2)
+                                ? const Color(0xFF00FF00)
+                                : const Color(0xFFFF0000);
+
+                            return Text(
+                              isFilled ? '█' : '░',
+                              style: TextStyle(
+                                color: isFilled
+                                    ? color
+                                    : const Color(0xFF333333),
+                              ),
+                            );
+                          }),
+                        ),
+                        const SizedBox(
+                          width: 2,
+                        ), // Spacing between health bar and game
+                        // Game Grid
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ...List.generate(_height, (y) {
                       return Row(
                         mainAxisSize: MainAxisSize.min,
                         children: List.generate(_width, (x) {
@@ -509,24 +546,24 @@ class _GalatermAppState extends State<GalatermApp> {
                         }),
                       );
                     }),
+                          ],
+                        ),
+                      ],
+                    ),
                   const SizedBox(height: 1),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                        width: 30,
-                        child: ProgressBar(
-                          value: (_player.health / _player.maxHealth.toDouble())
-                              .clamp(0.0, 1.0),
-                          valueColor: _player.health > (_player.maxHealth * 0.2)
+                      Text(
+                        'Health: ${_player.health}/${_player.maxHealth}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _player.health > (_player.maxHealth * 0.2)
                               ? const Color(0xFF00FF00)
                               : const Color(0xFFFF0000),
-                          backgroundColor: const Color(0xFF333333),
-                          showPercentage: false,
-                          label:
-                              'Health: ${_player.health}/${_player.maxHealth}',
                         ),
                       ),
+                      const SizedBox(width: 4),
                       Text(
                         'Score: ${_gameState.score} | Galabucks: ${_gameState.galabucks} | Bombs: ${_gameState.bombs}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
