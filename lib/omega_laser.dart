@@ -14,10 +14,8 @@ class OmegaLaser extends Entity {
         lines: List.generate((y).toInt(), (dy) {
           final yDiff = (y - dy).toDouble(); 
            final int halfWidth = yDiff.round();
-           final int leftX = (x.round() - halfWidth);
-           
-          final int innerSpaces = halfWidth * 2;
-          final String fullRow = "\\${' ' * innerSpaces}/";
+          final int leftX = (x.round() - halfWidth);
+          final String fullRow = "\\${'\\/' * halfWidth}/";
            
           if (leftX < 0) {
                final startIdx = -leftX;
