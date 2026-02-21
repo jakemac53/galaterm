@@ -23,6 +23,7 @@ class Player extends Entity {
   int get fireInterval => _rapidFireTicks > 0 ? toTicks(0.125) : toTicks(0.25);
 
   int _shieldHealth = 0;
+  int get shieldHealth => _shieldHealth;
   int _speedBoostTicks = 0;
   int _rapidFireTicks = 0;
   int _onFireTicks = 0;

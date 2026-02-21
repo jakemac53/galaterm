@@ -583,6 +583,32 @@ class _GalatermAppState extends State<GalatermApp> {
                     }),
                           ],
                         ),
+                        // Vertical Shield Bar
+                        const SizedBox(
+                          width: 2,
+                        ), // Spacing between game and shield bar
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(_height, (y) {
+                            // Calculate filled segments from bottom to top
+                            // Shield technically has no "max", but visually we can scale it to 100 or 150 for the bar
+                            final double fillRatio =
+                                (_player.shieldHealth / 150.0).clamp(0.0, 1.0);
+                            final int filledLines = (_height * fillRatio)
+                                .ceil();
+                            final bool isFilled =
+                                (_height - 1 - y) < filledLines;
+
+                            return Text(
+                              isFilled ? '█' : '░',
+                              style: TextStyle(
+                                color: isFilled
+                                    ? const Color(0xFF00E5FF) // Cyan for shield
+                                    : const Color(0xFF333333),
+                              ),
+                            );
+                          }),
+                        ),
                       ],
                     ),
                   const SizedBox(height: 1),
