@@ -203,6 +203,20 @@ class _GalatermAppState extends State<GalatermApp> {
     super.dispose();
   }
 
+  Color _getHealthColor(double ratio) {
+    if (ratio >= 0.5) {
+      // 1.0 (Green) to 0.5 (Yellow)
+      // r scales from 0 (at 1.0) to 255 (at 0.5)
+      final r = (255 * (1.0 - ratio) * 2).clamp(0, 255).toInt();
+      return Color.fromARGB(255, r, 255, 0);
+    } else {
+      // 0.5 (Yellow) to 0.0 (Red)
+      // g scales from 255 (at 0.5) to 0 (at 0.0)
+      final g = (255 * (ratio * 2)).clamp(0, 255).toInt();
+      return Color.fromARGB(255, 255, g, 0);
+    }
+  }
+
   @override
   Component build(BuildContext context) {
     // We create a lookup map to quickly find entities by their (x, y) coordinates.
@@ -494,10 +508,7 @@ class _GalatermAppState extends State<GalatermApp> {
                             final bool isFilled =
                                 (_height - 1 - y) < filledLines;
 
-                            final color =
-                                _player.health > (_player.maxHealth * 0.2)
-                                ? const Color(0xFF00FF00)
-                                : const Color(0xFFFF0000);
+                            final color = _getHealthColor(fillRatio);
 
                             return Text(
                               isFilled ? '█' : '░',
@@ -558,9 +569,9 @@ class _GalatermAppState extends State<GalatermApp> {
                         'Health: ${_player.health}/${_player.maxHealth}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: _player.health > (_player.maxHealth * 0.2)
-                              ? const Color(0xFF00FF00)
-                              : const Color(0xFFFF0000),
+                          color: _getHealthColor(
+                            _player.health / _player.maxHealth.toDouble(),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 4),
