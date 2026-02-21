@@ -101,7 +101,7 @@ class Explosion extends Entity {
     required super.y,
     int count = 8,
     Color color = const Color(0xFFFFFF00),
-  }) : super(health: 1) {
+  }) : super(health: 1, zIndex: 10) {
     final rand = Random();
     for (int i = 0; i < count; i++) {
       final angle = rand.nextDouble() * 2 * pi;
@@ -146,7 +146,7 @@ class ExplosionParticle extends Entity {
     required this.dy,
     required String character,
     required super.color,
-  }) : super(health: 1, character: character);
+  }) : super(health: 1, character: character, zIndex: 10);
 
   @override
   void move(GameState state) {

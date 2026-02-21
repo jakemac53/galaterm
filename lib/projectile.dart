@@ -22,6 +22,7 @@ class Projectile extends Entity {
     super.colors,
   }) : super(
          health: 1,
+         zIndex: 40,
          character: lines == null
              ? (character ?? (isEnemyProjectile ? 'v' : '|'))
              : null,

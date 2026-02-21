@@ -10,6 +10,7 @@ abstract class Entity {
   Color? color;
   List<Color>? colors; // new per-line color list
   Color? backgroundColor;
+  int zIndex;
 
   Entity({
     required this.x,
@@ -21,6 +22,7 @@ abstract class Entity {
     this.color,
     this.colors,
     this.backgroundColor,
+    this.zIndex = 0,
   }) : maxHealth = maxHealth ?? health,
        lines = lines ?? [character ?? ' '];
 

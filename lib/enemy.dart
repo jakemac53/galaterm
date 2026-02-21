@@ -14,6 +14,7 @@ class Enemy extends Entity {
     super.health = 1,
     super.lines,
     super.color,
+    super.zIndex = 30,
     this.divingSpeed = 8.0,
     this.returnSpeed = 10.0,
     this.diesOffscreen = false,

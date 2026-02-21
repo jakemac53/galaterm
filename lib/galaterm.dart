@@ -225,23 +225,28 @@ class _GalatermAppState extends State<GalatermApp> {
     final charMap = <String, String>{};
     final colorMap = <String, Color?>{};
     final bgMap = <String, Color?>{};
-    for (final e in _gameState.entities) {
-      for (final active in e.activeEntities) {
-        if (active.health > 0) {
-          for (int dy = 0; dy < active.height; dy++) {
-            for (int dx = 0; dx < active.width; dx++) {
-              if (active.lines[dy].length > dx) {
-                final char = active.lines[dy][dx];
-                if (char != ' ' || active.backgroundColor != null) {
-                  final key = '${active.gridX + dx},${active.gridY + dy}';
-                  charMap[key] = char;
-                  colorMap[key] =
-                      (active.colors != null && dy < active.colors!.length)
-                      ? active.colors![dy]
-                      : active.color;
-                  bgMap[key] = active.backgroundColor;
-                }
-              }
+    
+    final activeEntities = _gameState.entities
+        .expand((e) => e.activeEntities)
+        .where((active) => active.health > 0)
+        .toList();
+
+    // Sort ascending by zIndex, so higher zIndex overwrites lower
+    activeEntities.sort((a, b) => a.zIndex.compareTo(b.zIndex));
+
+    for (final active in activeEntities) {
+      for (int dy = 0; dy < active.height; dy++) {
+        for (int dx = 0; dx < active.width; dx++) {
+          if (active.lines[dy].length > dx) {
+            final char = active.lines[dy][dx];
+            if (char != ' ' || active.backgroundColor != null) {
+              final key = '${active.gridX + dx},${active.gridY + dy}';
+              charMap[key] = char;
+              colorMap[key] =
+                  (active.colors != null && dy < active.colors!.length)
+                  ? active.colors![dy]
+                  : active.color;
+              bgMap[key] = active.backgroundColor;
             }
           }
         }

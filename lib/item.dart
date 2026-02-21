@@ -15,6 +15,7 @@ class Item extends Entity {
         character: _getChar(type),
         color: _getContrastColor(type),
         backgroundColor: _getBgColor(type),
+        zIndex: 20,
       );
 
   static String _getChar(ItemType type) {

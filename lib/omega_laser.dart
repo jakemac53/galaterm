@@ -30,6 +30,7 @@ class OmegaLaser extends Entity {
            return (' ' * leftX) + widthStr;
         }),
         color: const Color(0xFFFF00FF), // Magenta
+        zIndex: 60,
       ) {
     // Start at top of screen
     x = 0; // x doesn't really matter for drawing since it handles its own left spacing

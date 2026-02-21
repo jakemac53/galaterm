@@ -42,6 +42,7 @@ class Player extends Entity {
         health: 100,
         lines: ['<*>', '/ \\'],
         color: const Color(0xFF00FF00),
+        zIndex: 50,
       );
 
   int get maxHealth => 100 + (armorUpgradeLevel * 25);
