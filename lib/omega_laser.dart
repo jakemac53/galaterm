@@ -25,7 +25,7 @@ class OmegaLaser extends Entity {
           return (' ' * leftX) + fullRow;
         }),
         color: const Color(0xFFFF00FF), // Magenta
-        zIndex: 60,
+        zIndex: 5,
       ) {
     x = 0; 
     y = 0;
