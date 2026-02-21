@@ -6,6 +6,7 @@ import 'enemy_formation.dart';
 import 'game_state.dart';
 import 'player.dart';
 import 'constants.dart';
+import 'omega_laser.dart';
 
 class GalatermApp extends StatefulComponent {
   const GalatermApp({super.key});
@@ -272,6 +273,15 @@ class _GalatermAppState extends State<GalatermApp> {
 
           if (event.character == ' ') {
             _player.useBomb(_gameState);
+            return true;
+          }
+          if (key == 'r') {
+            _gameState.addEntity(
+              OmegaLaser(
+                x: _player.x + (_player.width ~/ 2).toDouble(),
+                y: _player.y,
+              ),
+            );
             return true;
           }
           return false;
