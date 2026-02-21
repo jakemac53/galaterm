@@ -6,7 +6,7 @@ import 'game_state.dart';
 import 'constants.dart';
 
 class OmegaLaser extends Entity {
-  int _ticksRemaining = toTicks(3.0); // lasts for 3 seconds
+  int _ticksRemaining = toTicks(1.0); // lasts for 1 second
 
   OmegaLaser({required super.x, required super.y})
     : super(
