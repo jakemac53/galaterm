@@ -59,11 +59,11 @@ class Projectile extends Entity {
             for (final e in targets.toList()) {
               if (e != this && e.health > 0 && e is! Projectile) {
                 if (isEnemyProjectile && e.isPlayer) {
-                  e.attack(damage);
+                  e.attack(state, damage);
                   state.removeEntity(this);
                   return;
                 } else if (!isEnemyProjectile && e.isEnemy) {
-                  e.attack(damage);
+                  e.attack(state, damage);
                   state.score += 10;
                   state.removeEntity(this);
                   return;

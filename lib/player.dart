@@ -47,6 +47,7 @@ class Player extends Entity {
         zIndex: 50,
       );
 
+  @override
   int get maxHealth => 100 + (armorUpgradeLevel * 25);
 
   @override
@@ -87,7 +88,7 @@ class Player extends Entity {
     // Fire damage: 1 damage every 0.2s (12 ticks at 60fps) for 5s
     if (_onFireTicks > 0) {
       if (_onFireTicks % 12 == 0) {
-        attack(1);
+        attack(state, 1);
       }
       _onFireTicks--;
     }
@@ -161,7 +162,7 @@ class Player extends Entity {
   }
 
   @override
-  void attack(int damage) {
+  void attack(GameState state, int damage) {
     if (_shieldHealth > 0) {
       if (_shieldHealth >= damage) {
         _shieldHealth -= damage;
@@ -169,11 +170,12 @@ class Player extends Entity {
       } else {
         final remaining = damage - _shieldHealth;
         _shieldHealth = 0;
-        super.attack(remaining);
+        super.attack(state, remaining);
         return;
       }
     }
-    super.attack(damage);
+    state.addEntity(FloatingText.damage(x: x, y: y + 1, damage: damage));
+    super.attack(state, damage);
   }
 
   void moveTo(double newX, double newY) {

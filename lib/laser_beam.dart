@@ -36,7 +36,7 @@ class LaserBeam extends Entity {
       if (targets != null) {
         for (final e in targets.toList()) {
           if (e.isEnemy && e is! Projectile && e.health > 0) {
-            e.attack(damagePerTick);
+            e.attack(state, damagePerTick);
             // Let it pierce!
           }
         }

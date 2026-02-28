@@ -125,8 +125,8 @@ class Enemy extends Entity {
               final enemyDamage = health;
               final playerDamage = other.health;
 
-              other.attack(enemyDamage);
-              attack(playerDamage);
+              other.attack(state, enemyDamage);
+              attack(state, playerDamage);
 
               if (health <= 0) {
                 state.removeEntity(this);
@@ -230,7 +230,7 @@ class FlameProjectile extends Projectile {
     if (targets != null) {
       for (final e in targets) {
         if (e is Player) {
-          e.attack(damage);
+          e.attack(state, damage);
           e.setOnFire();
           state.removeEntity(this);
           return;
@@ -319,7 +319,7 @@ class BossEnemy extends Enemy {
       0,
       barWidth,
     );
-    final healthBar = '  [' + '=' * bars + ' ' * (barWidth - bars) + ']  ';
+    final healthBar = '  [${'=' * bars}${' ' * (barWidth - bars)}]  ';
     lines = [healthBar, ..._baseLines];
     colors = [
       const Color(0xFF00FF00), // Green for health bar
@@ -423,28 +423,23 @@ class HydraBossEnemy extends Enemy {
     if (_shotCooldown > 0) _shotCooldown--;
 
     // Update health bar
-    final _baseLines = _getLinesForLevel(splitLevel);
-    int barWidth = max(10, _baseLines[0].length - 4);
+    final baseLines = _getLinesForLevel(splitLevel);
+    int barWidth = max(10, baseLines[0].length - 4);
     int bars = (health / max(1, maxHealth) * barWidth).round().clamp(
       0,
       barWidth,
     );
 
     // Center the health bar above the boss sprite
-    int padding = max(0, (_baseLines[0].length - (barWidth + 2)) ~/ 2);
+    int padding = max(0, (baseLines[0].length - (barWidth + 2)) ~/ 2);
     String paddingStr = ' ' * padding;
     final healthBar =
-        paddingStr +
-        '[' +
-        '=' * bars +
-        ' ' * (barWidth - bars) +
-        ']' +
-        paddingStr;
+        '$paddingStr[${'=' * bars}${' ' * (barWidth - bars)}]$paddingStr';
 
-    lines = [healthBar, ..._baseLines];
+    lines = [healthBar, ...baseLines];
     colors = [
       const Color(0xFF00FF00), // Green for health bar
-      ...List.filled(_baseLines.length, const Color(0xFF00FF00)),
+      ...List.filled(baseLines.length, const Color(0xFF00FF00)),
     ];
   }
 

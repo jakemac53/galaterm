@@ -41,7 +41,7 @@ abstract class Entity {
 
   void collide(GameState state, Map<int, Map<int, List<Entity>>> grid) {}
 
-  void attack(int damage) {
+  void attack(GameState state, int damage) {
     health -= damage;
   }
 

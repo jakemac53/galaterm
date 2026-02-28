@@ -141,7 +141,7 @@ class HomingMissile extends Projectile {
             final targetDy = (e.y - y) * 2.0;
             final dist = sqrt(targetDx * targetDx + targetDy * targetDy);
             if (dist <= radius && e.health > 0) {
-              e.attack((damage * 0.5).toInt()); // 50% splash damage
+              e.attack(state, (damage * 0.5).toInt()); // 50% splash damage
             }
           }
         }
