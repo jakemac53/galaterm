@@ -11,7 +11,7 @@ class BombProjectile extends Entity {
   final double growthSpeed = perFrame(30.0); // Grows to max radius in ~0.5s
 
   BombProjectile({required super.x, required super.y})
-    : super(health: 1, character: '@', color: const Color(0xFFFF4500));
+    : super(health: 1, character: '🧨');
 
   void explode() {
     _exploded = true;

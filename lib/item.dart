@@ -1,4 +1,3 @@
-import 'package:nocterm/nocterm.dart';
 import 'entity.dart';
 import 'game_state.dart';
 import 'constants.dart';
@@ -13,48 +12,21 @@ class Item extends Entity {
     : super(
         health: 1,
         character: _getChar(type),
-        color: _getContrastColor(type),
-        backgroundColor: _getBgColor(type),
         zIndex: 20,
       );
 
   static String _getChar(ItemType type) {
     switch (type) {
       case ItemType.money:
-        return r'$';
+        return '💰';
       case ItemType.bomb:
-        return 'B';
+        return '🧨'; // Red dynamite is more visible than 💣 on black
       case ItemType.shield:
-        return 'S';
+        return '🛡️';
       case ItemType.speedBoost:
-        return '>';
+        return '⚡'; // Lightning is high contrast
       case ItemType.rapidFire:
-        return '!';
-    }
-  }
-
-  static Color _getBgColor(ItemType type) {
-    switch (type) {
-      case ItemType.money:
-        return const Color(0xFFFFD700);
-      case ItemType.bomb:
-        return const Color(0xFFFF4500);
-      case ItemType.shield:
-        return const Color(0xFF00FF00);
-      case ItemType.speedBoost:
-        return const Color(0xFF1E90FF);
-      case ItemType.rapidFire:
-        return const Color(0xFFFF00FF);
-    }
-  }
-
-  static Color _getContrastColor(ItemType type) {
-    switch (type) {
-      case ItemType.money:
-      case ItemType.shield:
-        return const Color(0xFF000000); // Black for bright backgrounds
-      default:
-        return const Color(0xFFFFFFFF); // White for darker backgrounds
+        return '🔥';
     }
   }
 

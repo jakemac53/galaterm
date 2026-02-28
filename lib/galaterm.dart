@@ -236,18 +236,18 @@ class _GalatermAppState extends State<GalatermApp> {
 
     for (final active in activeEntities) {
       for (int dy = 0; dy < active.height; dy++) {
-        for (int dx = 0; dx < active.width; dx++) {
-          if (active.lines[dy].length > dx) {
-            final char = active.lines[dy][dx];
-            if (char != ' ' || active.backgroundColor != null) {
-              final key = '${active.gridX + dx},${active.gridY + dy}';
-              charMap[key] = char;
-              colorMap[key] =
-                  (active.colors != null && dy < active.colors!.length)
-                  ? active.colors![dy]
-                  : active.color;
-              bgMap[key] = active.backgroundColor;
-            }
+        final line = active.lines[dy];
+        final runes = line.runes.toList();
+        for (int dx = 0; dx < runes.length; dx++) {
+          final char = String.fromCharCode(runes[dx]);
+          if (char != ' ' || active.backgroundColor != null) {
+            final key = '${active.gridX + dx},${active.gridY + dy}';
+            charMap[key] = char;
+            colorMap[key] =
+                (active.colors != null && dy < active.colors!.length)
+                ? active.colors![dy]
+                : active.color;
+            bgMap[key] = active.backgroundColor;
           }
         }
       }
@@ -408,25 +408,25 @@ class _GalatermAppState extends State<GalatermApp> {
                             ),
                             const SizedBox(height: 1),
                             _buildUpgradeRow(
-                              'Engines',
+                              '⚙️ Engines',
                               'Spd: ${12 + _player.speedUpgradeLevel * 2} -> ${14 + _player.speedUpgradeLevel * 2}',
                               100 + (_player.speedUpgradeLevel * 50),
                               () => _buyUpgrade('speed'),
                             ),
                             _buildUpgradeRow(
-                              'Cannons',
+                              '🔫 Cannons',
                               'Dmg: ${10 + _player.bulletStrengthUpgradeLevel * 5} -> ${15 + _player.bulletStrengthUpgradeLevel * 5}',
                               100 + (_player.bulletStrengthUpgradeLevel * 50),
                               () => _buyUpgrade('bullet'),
                             ),
                             _buildUpgradeRow(
-                              'Armor',
+                              '🛡️ Armor',
                               'HP: ${100 + _player.armorUpgradeLevel * 25} -> ${125 + _player.armorUpgradeLevel * 25}',
                               100 + (_player.armorUpgradeLevel * 50),
                               () => _buyUpgrade('armor'),
                             ),
                             _buildUpgradeRow(
-                              'Missiles',
+                              '🚀 Missiles',
                               _player.homingMissileLevel == 0
                                   ? 'Dmg: 0 -> 20'
                                   : 'Dmg: ${15 + _player.homingMissileLevel * 5} -> ${20 + _player.homingMissileLevel * 5}',
@@ -436,7 +436,7 @@ class _GalatermAppState extends State<GalatermApp> {
                               () => _buyUpgrade('missile'),
                             ),
                             _buildUpgradeRow(
-                              'Laser',
+                              '🔦 Laser',
                               _player.laserBeamLevel == 0
                                   ? 'Dmg: 0 -> 4'
                                   : 'Dmg: ${2 + _player.laserBeamLevel * 2} -> ${4 + _player.laserBeamLevel * 2}',
@@ -626,7 +626,7 @@ class _GalatermAppState extends State<GalatermApp> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Score: ${_gameState.score} | Galabucks: ${_gameState.galabucks} | Bombs: ${_gameState.bombs}',
+                        '🏆 Score: ${_gameState.score} | 💰 Galabucks: ${_gameState.galabucks} | 🧨 Bombs: ${_gameState.bombs}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(
