@@ -9,6 +9,7 @@ import 'item.dart';
 import 'bomb_projectile.dart';
 import 'homing_missile.dart';
 import 'laser_beam.dart';
+import 'floating_text.dart';
 
 class Player extends Entity {
   double? _targetX;
@@ -120,23 +121,43 @@ class Player extends Entity {
   ];
 
   void collect(Item item, GameState state) {
+    final String text;
+    final Color color;
+
     switch (item.type) {
       case ItemType.money:
         state.galabucks += 100;
+        text = "+100 bucks";
+        color = const Color(0xFFFFD700);
         break;
       case ItemType.bomb:
         state.bombs += 1;
+        text = "+1 bomb";
+        color = const Color(0xFFFF4500);
         break;
       case ItemType.shield:
         _shieldHealth += 25;
+        text = "+shield";
+        color = const Color(0xFF00FF00);
         break;
       case ItemType.speedBoost:
         _speedBoostTicks = toTicks(10.0);
+        text = "speed boost!";
+        color = const Color(0xFF1E90FF);
         break;
       case ItemType.rapidFire:
         _rapidFireTicks = toTicks(10.0);
+        text = "rapid fire!";
+        color = const Color(0xFFFF00FF);
         break;
     }
+
+    state.addEntity(FloatingText(
+      x: x + 1 - (text.length / 2),
+      y: y - 1,
+      text: text,
+      baseColor: color,
+    ));
   }
 
   @override
