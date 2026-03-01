@@ -24,7 +24,7 @@ class _GalatermAppState extends State<GalatermApp> {
   double _avgFrameTime = 0;
   bool _paused = false;
 
-  final int _width = 80;
+  final int _width = 120;
   final int _height = 40;
 
   int _levelNumber = 1;
@@ -40,19 +40,19 @@ class _GalatermAppState extends State<GalatermApp> {
         final healthMultiplier = 1 + ((level - 1) ~/ 5);
         if (bossType == 1) {
           yield EnemyFormation.hydraBoss(
-            x: 35,
+            x: 50,
             y: 5,
             healthMultiplier: healthMultiplier,
           );
         } else if (bossType == 2) {
           yield EnemyFormation.helicopterBoss(
-            x: 35,
+            x: 44,
             y: 5,
             healthMultiplier: healthMultiplier,
           );
         } else {
           yield EnemyFormation.boss(
-            x: 35,
+            x: 49,
             y: 5,
             healthMultiplier: healthMultiplier,
           );
@@ -309,7 +309,11 @@ class _GalatermAppState extends State<GalatermApp> {
           return false;
         },
         child: Center(
-          child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
             decoration: BoxDecoration(
               border: BoxBorder.all(style: BoxBorderStyle.rounded),
             ),
@@ -317,6 +321,7 @@ class _GalatermAppState extends State<GalatermApp> {
               padding: const EdgeInsets.all(1),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (_gameState.isGameOver)
                     Center(
@@ -526,6 +531,7 @@ class _GalatermAppState extends State<GalatermApp> {
                     )
                   else
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         // Vertical Health Bar
@@ -621,7 +627,8 @@ class _GalatermAppState extends State<GalatermApp> {
                     ),
                   const SizedBox(height: 1),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'Health: ${_player.health}/${_player.maxHealth}',
@@ -637,11 +644,12 @@ class _GalatermAppState extends State<GalatermApp> {
                         '🏆 Score: ${_gameState.score} | 💰 Galabucks: ${_gameState.galabucks} | 🧨 Bombs: ${_gameState.bombs}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(width: 4),
                       Text(
                         'FPS: ${_fps.toStringAsFixed(1)} | Frame: ${_avgFrameTime.toStringAsFixed(2)}ms',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(width: 2),
+                      const SizedBox(width: 4),
                       GestureDetector(
                         onTap: _skipToBoss,
                         child: Container(
@@ -663,10 +671,12 @@ class _GalatermAppState extends State<GalatermApp> {
               ),
             ),
           ),
-        ),
+        ],
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 
   void _buyUpgrade(String type) {
     setState(() {

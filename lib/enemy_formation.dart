@@ -34,7 +34,7 @@ class EnemyFormation extends Entity {
     // 3 rows, 8 cols = 24 enemies
     for (int r = 0; r < rows; r++) {
       for (int c = 0; c < cols; c++) {
-        final double ex = (24 + c * 4).toDouble();
+        final double ex = (44 + c * 4).toDouble();
         final double ey = (2 + r * 2).toDouble();
 
         if (r == 0) {
@@ -90,7 +90,7 @@ class EnemyFormation extends Entity {
     ];
     for (int r = 0; r < pattern.length; r++) {
       for (final c in pattern[r]) {
-        final double ex = (22 + c * 4).toDouble();
+        final double ex = (42 + c * 4).toDouble();
         final double ey = (2 + r * 2).toDouble();
         
         // Outer edges vs Inner core
@@ -152,7 +152,7 @@ class EnemyFormation extends Entity {
     ];
     for (int r = 0; r < pattern.length; r++) {
       for (final c in pattern[r]) {
-        final double ex = (26 + c * 4).toDouble();
+        final double ex = (46 + c * 4).toDouble();
         final double ey = (2 + r * 2).toDouble();
         
         final isOuter =
@@ -206,7 +206,7 @@ class EnemyFormation extends Entity {
     // 6 rows * 4 cols (2 left, 2 right) = 24 enemies
     for (int r = 0; r < 6; r++) {
       for (final c in [0, 1, 6, 7]) {
-        final double ex = (24 + c * 4).toDouble();
+        final double ex = (44 + c * 4).toDouble();
         final double ey = (2 + r * 2).toDouble();
         
         final isOuterColumn = c == 0 || c == 7;

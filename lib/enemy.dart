@@ -263,7 +263,7 @@ class BossEnemy extends Enemy {
   @override
   void move(GameState state) {
     // Boss only hovers in a wide sweeping pattern now
-    x = 28.0 + 22.0 * sin(state.ticks / 40.0);
+    x = 49.0 + 35.0 * sin(state.ticks / 40.0);
     y = 5.0 + 3.0 * cos(state.ticks / 25.0);
 
     // Boss fires 4 projectiles constantly
@@ -508,7 +508,7 @@ class HelicopterBossEnemy extends Enemy {
   @override
   void move(GameState state) {
     // Helicopter hovers in a lazy circle
-    x = 25.0 + 20.0 * sin(state.ticks / 40.0);
+    x = 44.0 + 35.0 * sin(state.ticks / 40.0);
     y = 5.0 + 3.0 * cos(state.ticks / 30.0);
 
     // 1. Aimed Stream (bursts)
