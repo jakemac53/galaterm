@@ -465,3 +465,119 @@ class HydraBossEnemy extends Enemy {
     ];
   }
 }
+
+class AimedEnemyProjectile extends Projectile {
+  AimedEnemyProjectile({
+    required super.x,
+    required super.y,
+    required super.dx,
+    required super.dy,
+    required super.damage,
+  }) : super(
+         isEnemyProjectile: true,
+         character: 'o',
+         color: const Color(0xFFFFA500),
+       );
+}
+
+class HelicopterBossEnemy extends Enemy {
+  int _aimedStreamCooldown = 0;
+  int _gatlingCooldown = 0;
+  double _aimDx = 0;
+  double _aimDy = 0;
+  int _streamTicks = 0;
+
+  static const _baseLines = [
+    r'      _______[===]_______      ',
+    r'     /                   \     ',
+    r'    | [ ]     [H]     [ ] |    ',
+    r'    [=====================]    ',
+    r'      / /     / \     \ \      ',
+  ];
+
+  HelicopterBossEnemy({
+    required super.x,
+    required super.y,
+    int healthMultiplier = 1,
+  }) : super(
+         health: 2000 * healthMultiplier,
+         lines: _baseLines,
+         color: const Color(0xFF666666),
+       );
+
+  @override
+  void move(GameState state) {
+    // Helicopter hovers in a lazy circle
+    x = 25.0 + 20.0 * sin(state.ticks / 40.0);
+    y = 5.0 + 3.0 * cos(state.ticks / 30.0);
+
+    // 1. Aimed Stream (bursts)
+    if (_streamTicks > 0) {
+      if (state.ticks % 5 == 0) {
+        state.addEntity(
+          AimedEnemyProjectile(
+            x: x + 15,
+            y: y + 4,
+            dx: _aimDx,
+            dy: _aimDy,
+            damage: 8,
+          ),
+        );
+      }
+      _streamTicks--;
+    } else if (_aimedStreamCooldown <= 0) {
+      // Aim at player and start stream
+      Player? player;
+      for (final e in state.entities) {
+        if (e is Player) player = e;
+      }
+      if (player != null) {
+        final dxTarget = (player.x + player.width / 2) - (x + 15);
+        final dyTarget = (player.y + player.height / 2) - (y + 4);
+        final dist = sqrt(dxTarget * dxTarget + dyTarget * dyTarget);
+        if (dist > 0) {
+          _aimDx = (dxTarget / dist) * perFrame(14.0);
+          _aimDy = (dyTarget / dist) * perFrame(14.0);
+          _streamTicks = toTicks(2.0);
+          _aimedStreamCooldown = toTicks(6.0);
+        }
+      }
+    }
+
+    // 2. Gatling Guns (rapid straight down)
+    if (_gatlingCooldown <= 0) {
+      state.addEntity(
+        Projectile(
+          x: x + 10,
+          y: y + 4,
+          dy: perFrame(20.0),
+          isEnemyProjectile: true,
+          damage: 5,
+        ),
+      );
+      state.addEntity(
+        Projectile(
+          x: x + 20,
+          y: y + 4,
+          dy: perFrame(20.0),
+          isEnemyProjectile: true,
+          damage: 5,
+        ),
+      );
+      _gatlingCooldown = toTicks(0.5);
+    }
+
+    if (_aimedStreamCooldown > 0) _aimedStreamCooldown--;
+    if (_gatlingCooldown > 0) _gatlingCooldown--;
+
+    // Update health bar
+    int barWidth = 24;
+    int bars = (health / max(1, maxHealth) * barWidth).round().clamp(0, barWidth);
+    final healthBar = '   [${'=' * bars}${' ' * (barWidth - bars)}]   ';
+    lines = [healthBar, ..._baseLines];
+    colors = [
+      const Color(0xFF00FF00),
+      ...List.filled(_baseLines.length, const Color(0xFF666666)),
+    ];
+  }
+}

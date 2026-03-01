@@ -274,6 +274,22 @@ class EnemyFormation extends Entity {
     enemies.add(HydraBossEnemy(x: x, y: y, healthMultiplier: healthMultiplier));
   }
 
+  EnemyFormation.helicopterBoss({
+    required double x,
+    required double y,
+    int healthMultiplier = 1,
+  })
+    : speed = 0,
+      _dx = 0,
+      fireRatePerSecond = 0,
+      divingSpeed = 0,
+      returnSpeed = 0,
+      super(x: 0, y: 0, character: ' ') {
+    enemies.add(
+      HelicopterBossEnemy(x: x, y: y, healthMultiplier: healthMultiplier),
+    );
+  }
+
   @override
   Iterable<Entity> get activeEntities => enemies;
 
@@ -283,6 +299,7 @@ class EnemyFormation extends Entity {
     final dying = enemies.where((e) => e.health <= 0).toList();
     for (final enemy in dying) {
       if (enemy is BossEnemy ||
+          enemy is HelicopterBossEnemy ||
           (enemy is HydraBossEnemy && enemy.splitLevel == 3)) {
         // Massive Boss explosion: grid of explosions
         for (int i = 0; i < 3; i++) {
@@ -374,7 +391,8 @@ class EnemyFormation extends Entity {
       if (!enemy.isDiving &&
           !enemy.isReturning &&
           enemy is! BossEnemy &&
-          enemy is! HydraBossEnemy) {
+          enemy is! HydraBossEnemy &&
+          enemy is! HelicopterBossEnemy) {
         if ((enemy.formationX <= 0 && _dx < 0) ||
             (enemy.formationX >= state.width - 1 && _dx > 0)) {
           hitEdge = true;
@@ -394,7 +412,8 @@ class EnemyFormation extends Entity {
         if (!enemy.isDiving &&
             !enemy.isReturning &&
             enemy is! BossEnemy &&
-            enemy is! HydraBossEnemy) {
+            enemy is! HydraBossEnemy &&
+            enemy is! HelicopterBossEnemy) {
           enemy.y = enemy.formationY;
           enemy.x = enemy.formationX;
         }
@@ -408,7 +427,8 @@ class EnemyFormation extends Entity {
         if (!enemy.isDiving &&
             !enemy.isReturning &&
             enemy is! BossEnemy &&
-            enemy is! HydraBossEnemy) {
+            enemy is! HydraBossEnemy &&
+            enemy is! HelicopterBossEnemy) {
           enemy.x = enemy.formationX;
           enemy.y = enemy.formationY;
         }
@@ -418,7 +438,13 @@ class EnemyFormation extends Entity {
     // Occasional dive trigger (chance per tick)
     if (_rand.nextDouble() < 0.005) {
       final available = enemies
-          .where((e) => !e.isDiving && !e.isReturning && e is! BossEnemy)
+          .where(
+            (e) =>
+                !e.isDiving &&
+                !e.isReturning &&
+                e is! BossEnemy &&
+                e is! HelicopterBossEnemy,
+          )
           .toList();
       if (available.isNotEmpty) {
         available[_rand.nextInt(available.length)].startDive();

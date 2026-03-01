@@ -36,17 +36,25 @@ class _GalatermAppState extends State<GalatermApp> {
     final rand = Random();
     while (true) {
       if (level % 5 == 0) {
-        if (level % 10 == 0) {
+        final bossType = (level ~/ 5 - 1) % 3;
+        final healthMultiplier = 1 + ((level - 1) ~/ 5);
+        if (bossType == 1) {
           yield EnemyFormation.hydraBoss(
             x: 35,
             y: 5,
-            healthMultiplier: 1 + ((level - 1) ~/ 5),
+            healthMultiplier: healthMultiplier,
+          );
+        } else if (bossType == 2) {
+          yield EnemyFormation.helicopterBoss(
+            x: 35,
+            y: 5,
+            healthMultiplier: healthMultiplier,
           );
         } else {
           yield EnemyFormation.boss(
             x: 35,
             y: 5,
-            healthMultiplier: 1 + ((level - 1) ~/ 5),
+            healthMultiplier: healthMultiplier,
           );
         }
       } else {
